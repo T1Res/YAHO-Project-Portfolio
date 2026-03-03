@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.njm.yaho.mapper.mysql.list.ListMapperMS">
+	<!-- 전체 목록 (무한 스크롤) -->
+	<select id="selectAllAnimeScroll" resultType="com.njm.yaho.domain.mysql.list.animeListMSDTO">
+	    SELECT *
+	    	FROM TBL_ANIME
+	    <choose>
+			  <when test="sort == 'asc'">
+			    ORDER BY TITLE ASC
+			  </when>
+			  <when test="sort == 'desc'">
+			    ORDER BY TITLE DESC
+			  </when>
+			  <when test="sort == 'rating'">
+			    ORDER BY SCORE DESC
+			  </when>
+			  <when test="sort == 'update'">
+			    ORDER BY UPDATED_AT DESC
+			  </when>
+			  <otherwise>
+			    ORDER BY TITLE ASC
+			  </otherwise>
+		</choose>
+	    LIMIT 
+	    	#{limit} 
+	    OFFSET 
+	    	#{offset}
+	</select>
+	
+	<!-- 태그 목록 -->
+	<select id="selectAllTags" resultType="String">
+	    SELECT 
+	    	TAGS 
+	    FROM 
+	    	TBL_ANIME
+	</select>
+
+	<select id="selectFilteredAnime" resultType="com.njm.yaho.domain.mysql.list.animeListMSDTO">
+		SELECT * FROM TBL_ANIME
+		WHERE
+			(#{keyword} IS NULL OR TITLE LIKE BINARY CONCAT('%', #{keyword}, '%'))
+			<if test="tags != null and tags.size() > 0">
+				<foreach item="tag" collection="tags" open="" separator=" " close="">
+					AND TAGS LIKE CONCAT('%', #{tag}, '%')
+				</foreach>
+			</if>
+		<choose>
+			<when test="sort == 'asc'">ORDER BY TITLE ASC</when>
+			<when test="sort == 'desc'">ORDER BY TITLE DESC</when>
+			<when test="sort == 'rating'">ORDER BY SCORE DESC</when>
+			<when test="sort == 'update'">ORDER BY UPDATED_AT DESC</when>
+			<otherwise>ORDER BY TITLE ASC</otherwise>
+		</choose>
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+
+	
+</mapper>

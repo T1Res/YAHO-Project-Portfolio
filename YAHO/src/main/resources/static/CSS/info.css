@@ -1,0 +1,194 @@
+@import
+	url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+@media screen and (max-width:750px) {
+	body {
+		padding: 0rem;
+		margin: 0;
+	}
+	.anime-info-container .review-form {
+		margin: 1rem 0;
+		width: 75%;
+	}
+}
+
+*, *::before, *::after {
+	margin: 0;
+	padding: 0;
+	box-shadow: border-box;
+}
+
+
+.anime-info-container {
+	font-family: 'Roboto', sans-serif;
+  background-color: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+    
+	width: 100%;
+	margin: 0 auto;
+	padding: 20px;
+	color: #fff;
+	background: linear-gradient(180deg, #141414, dimgray);
+	box-shadow: 1px 3px 2px rgba(0, 0, 0, 0.1);
+	border-radius: 10px;
+}
+
+.ani-section {
+	margin-left: 10px;
+	margin-bottom: 30px;
+	margin-right: 20px;
+}
+
+.ani-row {
+	display: flex;
+	align-items: center;
+	margin-bottom: 8px;
+}
+
+.ani-row h2 {
+	width: 150px; /* 고정 폭으로 줄 맞추기 */
+	margin-right: 25px;
+	font-size: 28px;
+	color: #fff;
+}
+
+.ani-row p {
+	margin: 0;
+	font-size: 26px;
+}
+
+/* 애니 줄거리 시작 */
+.ani-summary h2 {
+	font-size: 28px;
+	margin-top: 20px;
+}
+
+.ani-summary p {
+	overflow: hidden;
+	display: -webkit-box;
+	-webkit-line-clamp: 3; /* 처음엔 3줄까지만 */
+	-webkit-box-orient: vertical;
+	line-height: 1.6em;
+	max-height: 4.8em; /* line-height * 3줄 */
+	transition: max-height 0.3s ease;
+	font-size: 26px;
+	margin-right: 20px;
+}
+
+.ani-summary p.expanded {
+	-webkit-line-clamp: unset;
+	max-height: none;
+}
+
+.toggle-btn {
+	color: #007bff;
+	cursor: pointer;
+	margin-top: 8px;
+	display: inline-block;
+	font-weight: bold;
+}
+/* 애니 줄거리 끝 */
+
+h2 {
+	margin-bottom: 0.75rem;
+	font-size: 30px;
+}
+
+.cards .card {
+	width: 97%;
+	background: rgb(56, 56, 56);
+	border-radius: 10px;
+	padding: 0.5rem;
+	margin-bottom: 20px;
+	margin-right: 30px;
+}
+
+.card-top {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.userimg {
+	width: 50px;
+	height: 50px;
+	background: purple;
+	border-radius: 50%;
+	outline: none;
+}
+
+.name, .name .userimg {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 22px;
+	margin-bottom: 5px;
+	color: #fff;
+}
+
+.name .userimg {
+	justify-content: center;
+}
+
+.rate i {
+	color: yellow;
+	font-size: 22px; /* 필요시 크기 조정 */
+	margin-right: 4px;
+}
+
+.card-content {
+	padding-top: 0;
+}
+
+.card-content p {
+	font-size: 20px;
+	color: #fff;
+}
+
+.card-action {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.card-action span {
+	font-size: 16px;
+	color: RGB(101, 101, 114);
+}
+
+.card-action .btn {
+	font-size: 20px; 
+	padding : 0.5rem 0.9rem;
+	background: transparent;
+	border: 1px solid #808080;
+	border-radius: 5px;
+	color: #8C8C9F;
+	cursor: pointer;
+	transition: .2s ease-in-out;
+	padding: 0.5rem 1rem;
+}
+
+.btn:hover {
+	background: #000;
+	color: #ff0000;
+	border-color: transparent;
+}
+
+.btn i {
+	transition: color 0.2s ease-in-out;
+}
+
+.like-container {
+	display: flex;
+	align-items: flex-end;
+	gap: 8px;
+	font-size: 22px;
+	color: #8C8C9F;
+}
+
+#like-count {
+	font-weight: bold;
+}

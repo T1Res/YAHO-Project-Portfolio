@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.njm.yaho.mapper.oracle.admin.adminMapperOC">
+	
+	<!-- 등록 -->
+	<insert id="insertAnimeOC" parameterType="com.njm.yaho.domain.oracle.admin.AnimeOCDTO">
+    	INSERT INTO TBL_ANIME (ANIME_ID, ANIME_DESC, START_DATE, TOTAL_EPISODE, CURRENT_EPISODE, STUDIO, STUDIO_LINK, ANIME_SCORE, AGE_RATING)
+    	VALUES (#{ANIME_ID}, #{ANIME_DESC}, #{START_DATE}, #{TOTAL_EPISODE}, #{CURRENT_EPISODE}, #{STUDIO}, #{STUDIO_LINK}, #{ANIME_SCORE}, #{AGE_RATING})
+	</insert>
+    
+    <!-- 제목 불러오기 -->
+    <select id="getoclist" resultType="com.njm.yaho.domain.oracle.admin.AnimeOCDTO">
+        SELECT ANIME_ID, ANIME_DESC, START_DATE, TOTAL_EPISODE, CURRENT_EPISODE, ANIME_SCORE, AGE_RATING, STUDIO, STUDIO_LINK
+        FROM TBL_ANIME ORDER BY ANIME_ID
+    </select>
+
+	<!-- 수정 -->
+    <update id="updateAnimeDetail" parameterType="com.njm.yaho.domain.oracle.admin.AnimeOCDTO">
+	    UPDATE TBL_ANIME
+	    SET 
+	        ANIME_DESC = #{ANIME_DESC},
+	        START_DATE = #{START_DATE},
+	        TOTAL_EPISODE = #{TOTAL_EPISODE},
+	        CURRENT_EPISODE = #{CURRENT_EPISODE},
+	        STUDIO = #{STUDIO},
+	        STUDIO_LINK = #{STUDIO_LINK},
+	        ANIME_SCORE = #{ANIME_SCORE},
+	        AGE_RATING = #{AGE_RATING}
+	    WHERE 
+	        ANIME_ID = #{ANIME_ID}
+	</update>
+
+	<!-- 삭제 -->
+    <delete id="deleteAnime" parameterType="int">
+        DELETE FROM TBL_ANIME WHERE ANIME_ID = #{animeId}
+    </delete>
+    
+</mapper>

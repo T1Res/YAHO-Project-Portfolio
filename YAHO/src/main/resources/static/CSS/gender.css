@@ -1,0 +1,38 @@
+@charset "UTF-8";
+.gender-overlay-container {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto;
+}
+
+.gender-icon {
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: grayscale(100%) brightness(0.6);
+}
+
+.gender-overlay {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.gender-overlay.male {
+  background-color: rgba(0, 153, 255, 0.4); /* 파랑 */
+  left: 0;
+}
+
+.gender-overlay.female {
+  background-color: rgba(255, 102, 204, 0.4); /* 분홍 */
+}
+
+.gender-ratio-labels {
+  margin-top: 10px;
+  text-align: center;
+  color: white;
+  font-weight: bold;
+}

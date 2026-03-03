@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.njm.yaho.mapper.oracle.user.UserMapper">
+	<!-- id중복 -->
+	<select id="UserIdCheck" resultType="com.njm.yaho.domain.oracle.user.UserDTO">
+    	SELECT * FROM tbl_user WHERE USER_ID = #{USER_ID}
+	</select>
+	<!-- 이메일중복 -->
+	<select id="UserEmailCheck" resultType="com.njm.yaho.domain.oracle.user.UserDTO">
+    	SELECT * FROM tbl_user WHERE USER_EMAIL = #{USER_EMAIL}
+	</select>
+	<!-- 회원가입 -->
+	<insert id="UserInsert">
+		insert into tbl_user(USER_ID,USER_PASSWORD,USER_NICKNAME,USER_GENDER,USER_EMAIL,USER_BIO,USER_PROFILE_IMG,USER_PERMISSION)
+				values(#{USER_ID},#{USER_PASSWORD},#{USER_NICKNAME},#{USER_GENDER},#{USER_EMAIL},#{USER_BIO},#{USER_PROFILE_IMG},#{USER_PERMISSION})
+	</insert>
+	<!-- 로그인 -->
+	<select id="UserLogin" resultType="int">
+		select USER_PASSWORD from tbl_user where USER_ID=#{USER_ID}
+	</select>
+	<!-- 유저검색 -->
+	<select id="UserSearch" resultType="com.njm.yaho.domain.oracle.user.UserDTO">
+		select * from tbl_user where USER_ID=#{USER_ID}
+	</select>
+	<!-- 회원수정 -->
+	<update id="UserModify">
+		 UPDATE tbl_user
+    <set>
+        USER_NICKNAME = #{USER_NICKNAME},
+        USER_EMAIL = #{USER_EMAIL},
+        USER_BIO = #{USER_BIO}
+        
+        <if test="USER_PROFILE_IMG != null">
+            , USER_PROFILE_IMG = #{USER_PROFILE_IMG}
+        </if>
+
+        <if test="USER_PASSWORD != null">
+            , USER_PASSWORD = #{USER_PASSWORD}
+        </if>
+        <if test="USER_GENDER != null">
+     		, USER_GENDER = #{USER_GENDER}
+    	</if>
+    </set>
+    WHERE USER_ID = #{USER_ID}
+	</update>
+	<!-- 회원탈퇴 -->
+	<delete id="UserDelete">
+		delete from tbl_user where USER_ID=#{USER_ID}
+	</delete>
+	<!-- 프로필보기 -->
+	<select id="UserProfile" resultType="com.njm.yaho.domain.oracle.user.UserDTO">
+		select * from tbl_user where USER_ID=#{USER_ID}
+	</select>
+</mapper>

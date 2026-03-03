@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>전체 애니 | YAHO</title>
+<link rel="stylesheet" href="/CSS/AnimeMain.css">
+<link rel="stylesheet" href="/CSS/AnimeList.css">
+<script src="https://kit.fontawesome.com/071aa8f784.js" crossorigin="anonymous"></script>
+
+<!-- 기본 favicon -->
+<link rel="icon" href="IMG/favicon/favicon.ico" type="image/x-icon">
+
+<!-- 확장 favicon -->
+<link rel="shortcut icon" href="IMG/favicon/favicon.ico" type="image/x-icon">
+
+<!-- PNG favicon -->
+<link rel="icon" href="IMG/favicon/android-chrome-512x512.png" type="image/png">
+  
+</head>
+<body>
+	<div class="nav">
+        <img src="/IMG/logo_test1.png">
+        <div class="navitem" onclick="location.href='/Main'">홈</div>
+        <div class="navitem" onclick="location.href='/List'">전체 애니</div>
+        <div class="navitem" onclick="location.href='/Schedule/animeSchedule'">방영중 애니</div>
+        
+        <div class="navitem" onclick="location.href='/Admin/insert'">관리자</div>
+    </div>
+	<br>
+	<br>
+
+	<!-- Services Start -->
+	<div class="main-layout">
+		<!-- ✅ 사이드바 -->
+		<aside class="sidebar">
+			<form class="search-box">
+				<input class="search-txt" type="text" name="keyword" id="search-input" placeholder="검색어를 입력하세요">
+				<button class="search-btn">
+					<i class="fa-duotone fa-solid fa-magnifying-glass"></i>
+					<!-- 돋보기 아이콘 -->
+				</button>
+			</form>
+
+			<!-- Tags Start -->
+			<div class="tag-section">
+				<div class="tag-header">
+					<h3 class="tag-title">Tags</h3>
+				</div>
+				
+				<!-- 태그 목록 -->
+				<div class="tag-list" id="main-tag-list" th:fragment="tagListFragment">
+				    <a th:each="entry : ${tagMap}"
+					   href="#"
+					   th:attr="data-tag=${entry.key}"
+					   th:text="${entry.key + ' (' + entry.value + ')'}"
+					   th:class="'tag-btn' + (${selectedTags != null and selectedTags.contains(entry.key)} ? ' selected' : '')">
+					</a>
+				</div>
+
+
+				
+				<div class="tag-header">
+					<h3 class="tag-title">분기별</h3>
+				</div>
+				<div class="tag-list">
+					<a href="@{/List/List_list(tag='2025년1분기')}" class="tag-btn">2025년 1분기</a>
+					<a href="@{/List/List_list(tag='2024년4분기')}" class="tag-btn">2024년 4분기</a>
+					<a href="@{/List/List_list(tag='2024년3분기')}" class="tag-btn">2024년 3분기</a>
+					<a href="@{/List/List_list(tag='2024년2분기')}" class="tag-btn">2024년 2분기</a>
+				</div>
+				
+			</div>
+			<!-- Tags End -->
+
+		</aside>
+		<!-- 사이드바 end -->
+
+		<!-- 오른쪽 콘텐츠 영역 시작-->
+		<div class="content-area">
+			<!-- sort start -->
+			<div class="sort-bar">
+				<div class="sort-dropdown">
+					<button class="sort-toggle">
+						<span class="current-sort">오름차순(A~ㅎ)</span> <span class="arrow">▴</span>
+					</button>
+					<ul class="sort-menu">
+						<li class="selected" data-sort="asc">오름차순(A~ㅎ)</li>
+						<li data-sort="desc">내림차순(ㅎ~A)</li>
+						<li data-sort="rating">인기순</li>
+						<li data-sort="update">업데이트순</li>
+					</ul>
+				</div>
+			</div>
+			<!-- sort end -->
+
+			<!-- ✅ 카드 목록 start -->
+			<!-- card-container는 전체 구조로 유지 -->
+			<div class="card-container" id="anime-list">
+			
+			    <!-- 이 div는 fragment로 쓰이지 않음. 반복 요소만 fragment로 사용 -->
+			    <div class="anime-card" data-wow-delay="0.1s" 
+			         th:each="anime : ${list}" 
+			         th:fragment="animeCardsFragment">
+			        <div class="anime-thumbnail-wrapper">
+			            <img th:src="@{${anime.THUMNAIL_SERO_URL}}" th:alt="${anime.TITLE}" />
+			            <div class="anime-overlay d-flex flex-column">
+			                <a class="anime-zoom-btn" th:href="@{${anime.THUMNAIL_GARO_URL}}" data-lightbox="portfolio">
+			                    <i class="fa-solid fa-plus"></i>
+			                </a>
+			                <div class="mt-auto  title-container">
+			                	
+			                    <h5 th:text="${anime.TITLE}" th:attr="title=${anime.TITLE}"></h5>
+			                    <p>
+			                        평점: <span th:text="${anime.SCORE}"></span> 
+			                        태그: <span th:text="${anime.TAGS}"></span>
+			                    </p>
+			                </div>
+			            </div>
+			        </div>
+			    </div>
+			
+			</div>
+
+			<!-- ✅ 카드 목록 end -->
+			
+			<!-- 로딩 메시지 -->
+			<div id="loading" style="text-align: center; padding: 10px; display: none;">
+				로딩 중...
+			</div>
+			
+			<!-- 결과 메시지 -->
+			<div id="no-result-message" style="text-align: center; padding: 10px; display: none; color: gray;">
+			    검색 결과가 없습니다.
+			</div>
+			<div id="end-message" style="text-align: center; padding: 10px; display: none; color: gray;">
+			    더 이상 불러올 애니가 없습니다.
+			</div>
+
+			
+			<!-- 카드 목록 End -->
+		</div>
+		<!-- 오른쪽 콘텐츠 영역 끝 -->
+	</div>
+	<!-- Services End -->
+</body>
+<script>
+  const dropdown = document.querySelector('.sort-dropdown');
+  const toggleBtn = dropdown.querySelector('.sort-toggle');
+  const sortMenu = dropdown.querySelector('.sort-menu');
+  const sortItems = sortMenu.querySelectorAll('li');
+  const currentSortText = dropdown.querySelector('.current-sort');
+
+  // 드롭다운 열기/닫기
+  toggleBtn.addEventListener('click', () => {
+    dropdown.classList.toggle('open');
+  });
+
+  // 항목 클릭 시
+  sortItems.forEach(item => {
+    item.addEventListener('click', () => {
+      // 기존 선택 해제
+      sortItems.forEach(i => i.classList.remove('selected'));
+      item.classList.add('selected');
+
+      // 텍스트 표시 변경
+      currentSortText.textContent = item.textContent;
+
+      // 드롭다운 닫기
+      dropdown.classList.remove('open');
+    });
+  });
+
+  // 외부 클릭 시 닫기
+  document.addEventListener('click', (e) => {
+    if (!dropdown.contains(e.target)) {
+      dropdown.classList.remove('open');
+    }
+  });
+</script>
+
+<script>
+let currentPage = 1;
+let loading = false;
+let keyword = '';
+let selectedTags = [];
+let hasMore = true;
+let sortOption = 'asc'; // 기본 정렬 기준
+
+// 태그 필터
+document.querySelectorAll('.tag-btn').forEach(btn => {
+	btn.addEventListener('click', function () {
+		event.preventDefault();
+		const tag = this.getAttribute('data-tag');
+		console.log("클릭된 태그:", tag);
+
+		// 토글 선택
+		if (selectedTags.includes(tag)) {
+			selectedTags = selectedTags.filter(t => t !== tag);
+			this.classList.remove('selected');
+		} else {
+			selectedTags.push(tag);
+			this.classList.add('selected');
+		}
+
+		// 초기화 후 필터 적용
+		currentPage = 1;
+		hasMore = true;
+		document.getElementById('anime-list').innerHTML = '';
+		document.getElementById('end-message').style.display = 'none';
+		document.getElementById('no-result-message').style.display = 'none';
+
+		console.log("선택된 태그 목록:", selectedTags);
+
+		loadMoreAnime();
+	});
+});
+
+const searchInput = document.getElementById('search-input');
+let composing = false;
+let enterQueued = false;
+
+// 한글 조합 시작
+searchInput.addEventListener('compositionstart', () => {
+	composing = true;
+});
+
+// 조합 끝났을 때
+searchInput.addEventListener('compositionend', (e) => {
+	composing = false;
+	keyword = e.target.value.trim();
+
+	if (enterQueued) {
+		enterQueued = false;
+		triggerSearch();
+	}
+});
+
+// 영어 및 일반 입력
+searchInput.addEventListener('input', function () {
+	if (composing) return; // 한글 조합 중이면 무시
+	keyword = this.value.trim();
+	triggerSearch();
+});
+
+// 엔터 눌렀을 때
+searchInput.addEventListener('keydown', (e) => {
+	if (e.key === 'Enter') {
+		if (composing) {
+			// 조합 중이면 기다렸다가 실행
+			enterQueued = true;
+		} else {
+			// 조합 상태 아니면 바로 실행
+			keyword = searchInput.value.trim();
+			triggerSearch();
+		}
+		e.preventDefault(); // 폼 제출 방지
+	}
+});
+
+// 실제 검색 함수
+function triggerSearch() {
+	currentPage = 1;
+	hasMore = true;
+	document.getElementById('anime-list').innerHTML = '';
+	document.getElementById('end-message').style.display = 'none';
+	document.getElementById('no-result-message').style.display = 'none';
+	loadMoreAnime();
+}
+
+
+
+// 정렬 기준
+sortItems.forEach(item => {
+	item.addEventListener('click', () => {
+		const sortValue = item.getAttribute('data-sort');
+		if (sortValue !== sortOption) {
+			sortOption = sortValue;
+			currentPage = 1;
+			hasMore = true;
+			document.getElementById('anime-list').innerHTML = '';
+			document.getElementById('end-message').style.display = 'none';
+			document.getElementById('no-result-message').style.display = 'none';
+			loadMoreAnime();
+		}
+	});
+});
+
+// 스크롤 이벤트
+window.addEventListener('scroll', () => {
+	if (!hasMore) return; // 더 불러올 게 없으면 중단
+	if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 200) {
+		loadMoreAnime();
+	}
+});
+
+// 로딩 기능
+function loadMoreAnime() {
+	if (loading || !hasMore) return;
+	loading = true;
+
+	let url = `/List/animeList?page=${currentPage}`;
+	if (keyword) url += `&keyword=${encodeURIComponent(keyword)}`;
+	selectedTags.forEach(tag => {
+		url += `&tag=${encodeURIComponent(tag)}`;
+	});
+	if (sortOption) url += `&sort=${encodeURIComponent(sortOption)}`; 
+	
+	console.log("✅ keyword:", keyword); // 디버깅 로그
+	
+	fetch(url)
+	.then(response => response.text())
+	.then(data => {
+		if (data.trim() === '') {
+			if (currentPage === 1) {
+				document.getElementById('no-result-message').style.display = 'block';
+			} else {
+				document.getElementById('end-message').style.display = 'block';
+			}
+			hasMore = false;
+			loading = false;
+			return;
+		}
+
+		document.getElementById('anime-list').insertAdjacentHTML('beforeend', data);
+		currentPage++;
+		loading = false;
+		
+		loadTagList();
+	});
+}
+
+// 태그 목록 다시 로드
+function loadTagList() {
+	let tagUrl = `/List/tagListFragment`;
+	if (keyword) tagUrl += `?keyword=${encodeURIComponent(keyword)}`;
+	if (selectedTags.length > 0) {
+		selectedTags.forEach((tag, index) => {
+			tagUrl += `${index === 0 && !keyword ? '?' : '&'}tag=${encodeURIComponent(tag)}`;
+		});
+	}
+
+	fetch(tagUrl)
+		.then(response => response.text())
+		.then(html => {
+			document.getElementById('main-tag-list').outerHTML = html;
+			attachTagEvents(); // ✅ 새로 바뀐 태그에 이벤트 다시 등록
+		});
+}
+
+function attachTagEvents() {
+	document.querySelectorAll('.tag-btn').forEach(btn => {
+		btn.addEventListener('click', function (event) {
+			event.preventDefault();
+			const tag = this.getAttribute('data-tag');
+			if (!tag) return;
+
+			if (selectedTags.includes(tag)) {
+				selectedTags = selectedTags.filter(t => t !== tag);
+				this.classList.remove('selected');
+			} else {
+				selectedTags.push(tag);
+				this.classList.add('selected');
+			}
+
+			currentPage = 1;
+			hasMore = true;
+			document.getElementById('anime-list').innerHTML = '';
+			loadMoreAnime();
+		});
+	});
+}
+
+
+
+
+</script>

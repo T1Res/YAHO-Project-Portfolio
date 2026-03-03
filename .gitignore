@@ -1,0 +1,21 @@
+# Spring
+application.yml
+application-*.yml
+
+# Build
+/build/
+
+# IDE
+.idea/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Env
+.env

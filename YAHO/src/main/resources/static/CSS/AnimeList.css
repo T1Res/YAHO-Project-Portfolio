@@ -1,0 +1,348 @@
+/* 전체 레이아웃을 수평 정렬 */
+.main-layout {
+	display: flex;
+}
+
+/* 사이드 바 */
+.sidebar {
+	width: 250px;
+	height: 100%; /* ✅ 브라우저 창 높이 전체 */
+	background-color: #292929;
+	padding: 20px;
+	box-shadow: 1px 0 5px rgb(255, 0, 0);
+	flex-shrink: 0; /* 사이드바 너비 고정 */
+	position: fixed; /* ✅ 고정 위치 */
+	top: 60px;
+	left: 0;
+	overflow-y: scroll; /* ✅ 내용이 넘칠 경우 스크롤 */
+}
+
+.sidebar h3 {
+	font-size: 30px;
+	margin-bottom: 15px;
+}
+
+/* 오른쪽 콘텐츠 전체 영역 */
+.content-area {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	padding: 20px;
+	gap: 10px;
+	margin-left: 270px; /* 사이드바 너비만큼 왼쪽 여백 추가 */
+	overflow: scroll;
+	height: 100%;
+	position: relative;
+	z-index: 1;
+	overflow-y: scroll;
+}
+
+/* 전체 목록 */
+.card-container {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+	gap: 20px;
+	padding: 5px;
+	margin: 10px 10px 10px;
+	flex: 1;
+	box-sizing: border-box;
+}
+
+/* 스크롤바 스타일 */
+.content-area::-webkit-scrollbar {
+	width: 30px;
+}
+
+.content-area::-webkit-scrollbar-track {
+	background: #f1f1f1;
+}
+
+.content-area::-webkit-scrollbar-thumb {
+	background-color: #888;
+	border-radius: 10px;
+}
+
+.content-area::-webkit-scrollbar-thumb:hover {
+	background: #555;
+}
+
+@media ( max-width : 1200px) {
+	.card-container {
+		grid-template-columns: repeat(3, 1fr);
+	}
+}
+
+@media ( max-width : 900px) {
+	.card-container {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media ( max-width : 600px) {
+	.card-container {
+		grid-template-columns: 1fr;
+	}
+}
+
+/* 카드 전체 */
+.anime-card {
+	width: 100%;
+	max-width: 270px;
+	margin: 15px;
+	height: 350px;
+	transition: transform 0.3s ease;
+	display: flex;
+	flex-direction: column;
+}
+
+.anime-card:hover {
+	transform: scale(1.02);
+}
+
+/* 썸네일 래퍼 */
+.anime-thumbnail-wrapper {
+	position: relative;
+	border-radius: 12px;
+	overflow: hidden;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	height: 350px;
+}
+
+.anime-thumbnail-wrapper img {
+	width: 100%;
+	height: auto;
+	display: block;
+	object-fit: cover; /* 이미지 비율 유지하면서 채우기 */
+}
+
+/* 오버레이 */
+.anime-overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(15, 15, 15, 0.7);
+	color: white;
+	opacity: 0;
+	transition: opacity 0.3s ease;
+	padding: 20px;
+	justify-content: space-between;
+}
+
+.anime-thumbnail-wrapper:hover .anime-overlay {
+	opacity: 1;
+}
+
+/* 확대 버튼 */
+.anime-zoom-btn {
+	position: absolute; /* 오른쪽 상단 고정용 */
+	top: 10px;
+	right: 50px;
+	background-color: #ffffff;
+	padding: 10px;
+	border-radius: 50%;
+	text-align: center;
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	transition: background-color 0.2s ease;
+	text-decoration: none; /* 밑줄 제거 */
+}
+
+.anime-zoom-btn i {
+	font-size: 30px;
+	color: #ff0000;
+}
+
+.anime-zoom-btn:hover {
+	background-color: #f0f0f0;
+}
+
+/* 상위 요소에도 overflow 숨기기 */
+.title-container {
+  width: 100%;
+  overflow: hidden;
+}
+
+/* 제목 자체는 기존 + 생략 처리 */
+.anime-overlay h5 {
+  font-size: 16px;
+  margin: 250px 0 10px;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  width: 100%;
+}
+
+
+.anime-overlay .mt-auto {
+  width: 100%;
+  overflow: hidden;
+}
+
+
+
+.anime-overlay p {
+	font-size: 14px;
+	margin: 0;
+	color: #ccc;
+}
+
+.anime-overlay span {
+	font-weight: bold;
+	color: #ffcc00;
+}
+
+
+/* 검색바 */
+.search-box {
+	height: 30px;
+	width: 230px;
+	background: white;
+	border-radius: 40px;
+	padding: 10px;
+	border: 1px solid #ff0000;
+}
+
+.search-txt {
+	border: none;
+	background: none;
+	outline: none;
+	float: left;
+	padding: 0px;
+	color: #797979;
+	font-size: 16px;
+	line-height: 30px;
+	width: 170px;
+}
+
+.search-btn {
+	color: #ff0000;
+	float: right;
+	width: 40px;
+	height: 100%;
+	border: none;
+	border-radius: 50%;
+	background: white;
+	font-size: 16px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.search-btn img {
+	width: 40px;
+	height: 100%;
+}
+
+/* tag 부분 */
+.tag-header {
+	margin: 20px -0.25rem;
+}
+
+.tag-title {
+	font-size: 1.25rem;
+	color: #fff;
+}
+
+.tag-list {
+	display: flex;
+	flex-wrap: wrap;
+	margin: -0.25rem;
+}
+
+.tag-btn {
+	display: inline-block;
+	margin: 0.25rem;
+	padding: 0.25rem 0.5rem;
+	border: 1px solid #6c757d;
+	border-radius: 0.2rem;
+	font-size: 0.875rem;
+	color: #6c757d;
+	text-decoration: none;
+	background-color: transparent;
+	transition: all 0.2s ease-in-out;
+}
+
+.tag-btn:hover {
+	background-color: #6c757d;
+	color: #fff;
+}
+
+.tag-btn.selected {
+	background-color: #6c757d;
+	color: white;
+	font-weight: bold;
+}
+
+
+/* sort/dropdown */
+.sort-bar {
+	display: flex;
+	justify-content: flex-end;
+}
+
+.sort-dropdown {
+	position: relative;
+	display: inline-block;
+	margin: 1rem;
+}
+
+.sort-toggle {
+	background: none;
+	border: none;
+	font-size: 18px;
+	cursor: pointer;
+	padding: 0.5rem;
+	color: #fff;
+}
+
+.arrow {
+	font-size: 12px;
+	margin-left: 5px;
+}
+
+.sort-menu {
+	display: none;
+	position: absolute;
+	right: 0;
+	margin-top: 0.5rem;
+	padding: 0.5rem 0;
+	background-color: black;
+	border: 1px solid #ddd;
+	border-radius: 8px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	z-index: 100;
+	list-style: none;
+	width: 160px;
+}
+
+.sort-menu li {
+	padding: 0.5rem 1rem;
+	cursor: pointer;
+	font-size: 14px;
+	white-space: nowrap;
+}
+
+.sort-menu li:hover {
+	background-color: grey;
+}
+
+.sort-menu li.selected::before {
+	content: '✔ ';
+	color: red;
+	margin-right: 6px;
+}
+
+.sort-menu .selected {
+	font-weight: bold;
+	color: red;
+}
+
+/* 드롭다운 토글 활성화용 (JS 필요) */
+.sort-dropdown.open .sort-menu {
+	display: block;
+}

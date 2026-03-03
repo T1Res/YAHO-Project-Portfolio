@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>수정 평점 테스트</title>
+<link rel="stylesheet" th:href="@{/CSS/test3.css}">
+</head>
+
+<body>
+	<form th:action="@{/Info/updateRatePro}" method="post">
+		<table>
+
+			<div class="wrap">
+				<div class="rating-container">
+					<div class="rating-box">
+						<h1>평점 게시판</h1>
+
+
+						<!-- ⭐ 별점 입력 영역 -->
+						<div class="rating">
+							<label class="rating__label rating__label--half" for="starhalf">
+								<input type="radio" id="starhalf" class="rating__input"
+								name="SCORE_SCORE" value=0.5 /> <span class="star-icon"></span>
+							</label> <label class="rating__label rating__label--full" for="star1">
+								<input type="radio" id="star1" class="rating__input"
+								name="SCORE_SCORE" value=1.0 /> <span class="star-icon"></span>
+							</label> <label class="rating__label rating__label--half" for="star1half">
+								<input type="radio" id="star1half" class="rating__input"
+								name="SCORE_SCORE" value=1.5 /> <span class="star-icon"></span>
+							</label> <label class="rating__label rating__label--full" for="star2">
+								<input type="radio" id="star2" class="rating__input"
+								name="SCORE_SCORE" value=2.0 /> <span class="star-icon"></span>
+							</label> <label class="rating__label rating__label--half" for="star2half">
+								<input type="radio" id="star2half" class="rating__input"
+								name="SCORE_SCORE" value=2.5 /> <span class="star-icon"></span>
+							</label> <label class="rating__label rating__label--full" for="star3">
+								<input type="radio" id="star3" class="rating__input"
+								name="SCORE_SCORE" value=3.0 /> <span class="star-icon"></span>
+							</label> <label class="rating__label rating__label--half" for="star3half">
+								<input type="radio" id="star3half" class="rating__input"
+								name="SCORE_SCORE" value=3.5 checked /> <span class="star-icon"></span>
+							</label> <label class="rating__label rating__label--full" for="star4">
+								<input type="radio" id="star4" class="rating__input"
+								name="SCORE_SCORE" value=4.0 /> <span class="star-icon"></span>
+							</label> <label class="rating__label rating__label--half" for="star4half">
+								<input type="radio" id="star4half" class="rating__input"
+								name="SCORE_SCORE" value=4.5 /> <span class="star-icon"></span>
+							</label> <label class="rating__label rating__label--full" for="star5">
+								<input type="radio" id="star5" class="rating__input"
+								name="SCORE_SCORE" value=5.0 /> <span class="star-icon"></span>
+							</label>
+						</div>
+						<br>
+						<!-- 📝 댓글 입력창 -->
+						<div style="margin-top: 20px;">
+							<textarea name="SCORE_CONTENT" rows="4" cols="50"
+								 th:text="${dto.SCORE_CONTENT}"></textarea>
+						</div>
+
+						<!-- 🔒 숨겨진 값 (예: 애니메이션 ID, 사용자 ID) -->
+						<input type="text" name="ANIME_ID" value=999 />
+						<!-- 테스트용 유저아이디 입력칸 -->
+						<input type="text" th:value="${dto.USER_ID}" name="USER_ID" />
+						<!-- ✅ 제출 버튼 -->
+						<button type="submit" style="margin-top: 16px;">등록</button>
+
+					</div>
+				</div>
+			</div>
+
+		</table>
+	</form>
+	
+	</form>
+	<!-- 별점 기능 -->
+  <script src="/JS/Rating.js"></script>
+</body>
+</html>

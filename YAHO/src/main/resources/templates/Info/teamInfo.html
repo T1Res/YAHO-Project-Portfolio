@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>우리 팀을 소개합니다</title>
+<link rel="stylesheet" href="/CSS/Info/tab.css">
+<link rel="stylesheet" href="/CSS/Info/teamInfo.css">
+</head>
+<body>
+	<div class="tab-container">
+		<div class="tabs on" onclick="openTab('Tab1')">사이트 소개</div>
+		<div class="tabs" onclick="openTab('Tab2')">팀원 소개</div>
+	</div>
+
+	<div class="tab_wrap">
+		<div id="Tab1" class="tab on">
+			<h1 class="title">YAHO에 오신 것을 환영합니다!</h1>
+			<br>
+			<img src="/img/logo_test1.png" alt="YAHO 소개 배너" class="intro-banner">
+			<br>
+			<p class="a">YAHO는 다양한 애니메이션 정보를 한눈에 볼 수 있는 정보 공유 플랫폼입니다.</p>
+			<br>
+			<p class="a">🔍 검색과 🏷️ 태그 기능을 통해 원하는 작품을 쉽게 찾고</p>
+			<br>
+			<p class="a">💬 리뷰와 반응을 통해 사용자들과 소통할 수 있습니다.</p>
+			<br>
+		</div>
+		<div id="Tab2" class="tab">
+			<h1 class="title">👥 우리 팀을 소개합니다</h1>
+				<div class="team-container">
+					<div class="member-card">
+						<img src="/IMG/seoyoungprofile.jpg" alt="팀원1" class="member-photo">
+						<h2 class="name">안서영</h2>
+						<p class="role">개발자</p>
+						<p class="roleinfo">애니 보는 것에 저의 인생 전부를 걸었습니다. 애니는 저의 꿈!</p>
+					</div>
+					<div class="member-card">
+						<img src="/IMG/수달.png" alt="팀원2" class="member-photo">
+						<h2 class="name">조혜림</h2>
+						<p class="role">사 장</p>
+						<p class="roleinfo">NJM의 사장으로 애니 소개 페이지 개발을 위해 JSL 인재개발원으로부터 1000억 투자를 받았습니다.</p>
+					</div>
+
+					<div class="member-card">
+						<img src="/IMG/성규민프로필이미지.png" alt="팀원3" class="member-photo">
+						<h2 class="name">성규민</h2>
+						<p class="role">개발자</p>
+						<p class="roleinfo">NJM의 성실한 노예입니다. 명령만 내려주십시오.</p>
+					</div>
+
+					<div class="member-card">
+						<img src="/IMG/증명사진_강록원.jpg" alt="팀원4" class="member-photo">
+						<h2 class="name">강록원</h2>
+						<p class="role">개발자</p>
+						<p class="roleinfo">현직 오타쿠로서 다음 세대의 오타쿠를 응원합니다.</p>
+					</div>
+
+					<div class="member-card">
+						<img src="/IMG/이종준.png" alt="팀원5" class="member-photo">
+						<h2 class="name">이종준</h2>
+						<p class="role">개발자</p>
+						<p class="roleinfo">반갑습니다</p>
+					</div>
+				</div>
+			</div>
+		</div>
+</body>
+<script>
+/*
+  const cards = document.querySelectorAll('.member-card');
+  const container = document.querySelector('.team-container');
+  const cardCount = cards.length;
+  let currentAngle = 0;
+
+  // 각 카드를 원형 배치 (360도 / 카드 수 만큼 회전)
+  const radius = 400; // 원의 반지름 조정 가능
+
+  cards.forEach((card, index) => {
+    const angle = (360 / cardCount) * index;
+    card.style.transform = `rotateY(${angle}deg) translateZ(${radius}px)`;
+  });
+
+  function rotate(direction) {
+    const angleStep = 360 / cardCount;
+    currentAngle += direction * angleStep;
+    container.style.transform = `rotateY(${currentAngle}deg)`;
+  }
+*/
+  function openTab(tabName) {
+      document.querySelectorAll('.tab, .tabs').forEach(function(el) {
+          el.classList.remove('on');
+      });
+      document.getElementById(tabName).classList.add('on');
+      document.querySelector('.tabs[onclick="openTab(\'' + tabName + '\')"]').classList.add('on');
+  }
+</script>
+</html>

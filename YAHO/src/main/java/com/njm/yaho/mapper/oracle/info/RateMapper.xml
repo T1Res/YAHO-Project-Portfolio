@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.njm.yaho.mapper.oracle.info.RateMapper">
+	<insert id="insertRate" parameterType="com.njm.yaho.domain.oracle.info.RatingDTO">
+	  INSERT INTO TBL_SCORE (
+      SCORE_ID,
+      ANIME_ID,
+      SCORE_CONTENT,
+      SCORE_SCORE,
+      USER_ID
+    ) VALUES (
+      SC_ID_SEQ.NEXTVAL,
+      #{ANIME_ID},
+      #{SCORE_CONTENT, jdbcType=VARCHAR},
+      #{SCORE_SCORE},
+      #{USER_ID,jdbcType=VARCHAR}
+    )
+	</insert>
+	
+	<select id="selectRateListByAnime" resultType="com.njm.yaho.domain.oracle.info.RatingDTO">
+		SELECT 
+	        SCORE_ID,
+	        ANIME_ID,
+	        T1.USER_ID,
+	        SCORE_CONTENT,
+	        SCORE_SCORE,
+	        SCORE_REGDATE,
+	        T2.USER_NICKNAME AS USER_NICKNAME,
+	        NVL(NULLIF(TRIM(T2.USER_PROFILE_IMG), ''), '/IMG/kibon_image.jpg') AS USER_PROFILE_IMG
+	    FROM 
+	        TBL_SCORE T1
+	    JOIN
+	        TBL_USER T2
+	    ON
+	        T1.USER_ID = T2.USER_ID
+	    WHERE 
+	        ANIME_ID = #{ANIME_ID}
+	    ORDER BY 
+	        SCORE_ID DESC
+    </select>
+
+	<select id="getAverageScore" resultType="double">
+    SELECT ROUND(AVG(SCORE_SCORE), 1)
+    FROM TBL_SCORE
+    WHERE ANIME_ID = #{ANIME_ID}
+	</select>
+	
+	<select id="selectRateCount" parameterType="java.util.HashMap" resultType="com.njm.yaho.domain.oracle.info.RatingDTO">
+		SELECT SCORE_SCORE, COUNT(*) AS COUNT
+		FROM TBL_SCORE
+		WHERE ANIME_ID = #{ANIME_ID} 
+		GROUP BY SCORE_SCORE
+		ORDER BY SCORE_SCORE
+	</select>
+	<select id="selectGenderCount" resultType="com.njm.yaho.domain.oracle.info.RatingChartDTO">
+		SELECT 
+   			B.ANIME_ID,
+    		COUNT(CASE WHEN A.USER_GENDER = 1 THEN 1 END) AS MENCOUNT,
+    		COUNT(CASE WHEN A.USER_GENDER = 2 THEN 1 END) AS GIRLCOUNT
+		FROM  
+    		TBL_USER A
+		INNER JOIN 
+    		TBL_SCORE B ON A.USER_ID = B.USER_ID
+		INNER JOIN 
+    		TBL_ANIME C ON B.ANIME_ID = C.ANIME_ID
+		WHERE 
+    		B.ANIME_ID = #{ANIME_ID}
+		GROUP BY 
+    		B.ANIME_ID
+		ORDER BY 
+    		B.ANIME_ID
+	</select>
+	<update id="updateRate" >
+		UPDATE tbl_score SET SCORE_CONTENT=#{SCORE_CONTENT},SCORE_SCORE=#{SCORE_SCORE},SCORE_REGDATE=sysdate
+		WHERE USER_ID=#{USER_ID} AND ANIME_ID=#{ANIME_ID}
+	</update>
+	<select id="searchRating" resultType="com.njm.yaho.domain.oracle.info.RatingDTO">
+		SELECT *
+		FROM TBL_SCORE
+		WHERE USER_ID=#{USER_ID}
+		AND ANIME_ID=#{ANIME_ID} 
+	</select>
+	<delete id="deleteRate">
+		DELETE
+		FROM TBL_SCORE
+		WHERE USER_ID=#{USER_ID}
+		AND ANIME_ID=#{ANIME_ID}
+	</delete>
+	<update id="updateAnimeRate">
+		UPDATE tbl_anime SET ANIME_SCORE=#{SCORE}
+		WHERE ANIME_ID=#{ANIME_ID}
+	</update>
+</mapper>

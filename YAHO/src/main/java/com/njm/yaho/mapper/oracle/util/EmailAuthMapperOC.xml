@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.njm.yaho.mapper.oracle.util.EmailAuthMapperOC">
+	
+	<resultMap id="emailAuthResultMap" type="com.njm.yaho.domain.oracle.util.EmailAuthOCDTO">
+	    <result property="email" column="EMAIL"/>
+	    <result property="authCode" column="AUTH_CODE"/>
+	    <result property="isVerified" column="IS_VERIFIED"/>
+	    <result property="expireTime" column="EXPIRE_TIME"/>
+	    <result property="sentTime" column="SENT_TIME"/>
+	    <result property="tryCount" column="TRY_COUNT"/>
+	</resultMap>
+	
+	
+	<select id="findByEmail" resultType="com.njm.yaho.domain.oracle.util.EmailAuthOCDTO">
+    	SELECT 
+    		* 
+    	FROM 
+    		TBL_EMAIL_AUTH
+  		WHERE 
+  			EMAIL = #{email}
+  	</select>
+
+  	<insert id="insertEmailAuth">
+    	INSERT INTO TBL_EMAIL_AUTH 
+    		(EMAIL, AUTH_CODE, IS_VERIFIED, EXPIRE_TIME, SENT_TIME, TRY_COUNT) 
+      	VALUES 
+      		(#{email}, #{authCode}, 'N', #{expireTime}, #{sentTime}, 0)
+	</insert>
+
+	<update id="updateEmailAuth">
+    	UPDATE 
+    		TBL_EMAIL_AUTH
+    	SET 
+    		AUTH_CODE = #{authCode},
+        	EXPIRE_TIME = #{expireTime},
+        	SENT_TIME = #{sentTime},
+        	IS_VERIFIED = 'N',
+        	TRY_COUNT = 0
+    	WHERE
+    		EMAIL = #{email}
+	</update>
+
+	<delete id="deleteByEmail">
+    	DELETE FROM 
+    		TBL_EMAIL_AUTH 
+    	WHERE 
+    		EMAIL = #{email}
+	</delete>
+	
+	<update id="markEmailAsVerified">
+  		UPDATE 
+  			TBL_EMAIL_AUTH
+  		SET 
+  			IS_VERIFIED = 'Y'
+  		WHERE 
+  			EMAIL = #{email}
+	</update>
+	
+	<select id="findByEmailAndCode" resultMap="emailAuthResultMap">
+		SELECT * 
+		FROM TBL_EMAIL_AUTH
+		WHERE EMAIL = #{email}
+		AND AUTH_CODE = #{authCode}
+	</select>
+	
+	<update id="updateAuthCodeAndIncrementTryCount">
+	    UPDATE TBL_EMAIL_AUTH
+	    SET AUTH_CODE = #{authCode},
+	        EXPIRE_TIME = #{expireTime},
+	        SENT_TIME = #{sentTime},
+	        IS_VERIFIED = 'N',
+	        TRY_COUNT = TRY_COUNT + 1
+	    WHERE EMAIL = #{email}
+	</update>
+	
+</mapper>

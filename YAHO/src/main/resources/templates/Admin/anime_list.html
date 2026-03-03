@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>애니메이션 목록 | YAHO</title>
+    <link rel="stylesheet" href="/CSS/AnimeMain.css">
+    <link rel="stylesheet" href="/CSS/style.css">
+    <!-- favicon -->
+	<link rel="icon" href="IMG/favicon/favicon.ico" type="image/x-icon">
+    <script src="https://kit.fontawesome.com/071aa8f784.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div th:replace="~{fragments/nav :: navbar}"></div>
+
+    <br><br>
+    
+	
+	
+    <div class="main-layout">
+        <!-- ✅ 사이드바(검색바) -->
+        <aside class="sidebar">
+        	<form class="search-box">
+				<input class="search-txt" type="text" name="keyword" id="search-input" placeholder="검색어를 입력하세요">
+				<button class="search-btn">
+					<i class="fa-duotone fa-solid fa-magnifying-glass"></i>
+					<!-- 돋보기 아이콘 -->
+				</button>
+			</form>
+			
+			<button onclick="syncScore()">애니 평점 새로고침</button>
+
+            <!-- 등록 모달 시작 -->
+            <div class="insert-section">
+                <div class="insert-list">
+                    <!-- 등록 버튼 --><br>
+                    <a href="#" class="insert-btn" id="open-insert" style="width: 100%; text-align: center; margin-bottom: 10px;">애니메이션 등록</a>
+
+                    <!-- ✅ 통합 모달 -->
+                    <div id="combinedModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close-insert">&times;</span>
+                            <form action="/Admin/insert_full" method="post" enctype="multipart/form-data">
+                                <!-- 기본 정보 -->
+                                <h4>기본 정보</h4>
+                                <label for="TITLE">제목</label><br>
+                                <input type="text" id="TITLE" name="TITLE" required><br><br>
+
+                                <label for="THUMNAIL_GARO_URL">가로 이미지</label><br>
+                                <input type="file" id="THUMNAIL_GARO_URL" name="THUMNAIL_GARO_URL" accept="image/*" onchange="previewImage(this, 'garoPreview')"><br>
+                                <img id="garoPreview" style="max-width: 200px; display: none; margin-top: 10px;"><br><br>
+
+                                <label for="THUMNAIL_SERO_URL">세로 이미지</label><br>
+                                <input type="file" id="THUMNAIL_SERO_URL" name="THUMNAIL_SERO_URL" accept="image/*" onchange="previewImage(this, 'seroPreview')"><br>
+                                <img id="seroPreview" style="max-height: 300px; display: none; margin-top: 10px;"><br><br>
+
+                                <label>요일 (중복 선택 가능)</label><br>
+                                <input type="checkbox" name="WEEKDAY" value="월요일"> 월요일
+                                <input type="checkbox" name="WEEKDAY" value="화요일"> 화요일
+                                <input type="checkbox" name="WEEKDAY" value="수요일"> 수요일
+                                <input type="checkbox" name="WEEKDAY" value="목요일"> 목요일
+                                <input type="checkbox" name="WEEKDAY" value="금요일"> 금요일
+                                <input type="checkbox" name="WEEKDAY" value="토요일"> 토요일
+                                <input type="checkbox" name="WEEKDAY" value="일요일"> 일요일<br><br>
+
+                                <label for="SCORE">별점 (0.0 ~ 5.0)</label><br>
+                                <input type="number" id="SCORE" name="SCORE" step="0.5" min="0" max="5" value="0" onkeydown="return false;" onfocus="this.blur();"><br><br>
+
+                                <label for="TAGS">태그 (장르)</label><br>
+                                <input type="text" id="TAGS" name="TAGS" placeholder="예: 판타지,액션"><br><br>
+
+                                <!-- 상세 정보 -->
+                                <h4>상세 정보</h4>
+                                <label for="ANIME_DESC">줄거리</label><br>
+                                <textarea id="ANIME_DESC" name="ANIME_DESC" rows="5" cols="40" required></textarea><br><br>
+
+                                <label for="START_DATE">방영 시작일</label><br>
+                                <input type="text" id="START_DATE" name="START_DATE"><br><br>
+
+                                <label for="TOTAL_EPISODE">총 회차수</label><br>
+                                <input type="text" id="TOTAL_EPISODE" name="TOTAL_EPISODE"><br><br>
+
+                                <label for="CURRENT_EPISODE">현재 회차</label><br>
+                                <input type="text" id="CURRENT_EPISODE" name="CURRENT_EPISODE"><br><br>
+
+								<label for="STUDIO">제작사</label><br>
+                                <input type="text" id="STUDIO" name="STUDIO"><br><br>
+
+								<label for="STUDIO_LINK">제작사 링크</label><br>
+                                <input type="text" id="STUDIO_LINK" name="STUDIO_LINK"><br><br>
+
+                                <label for="AGE_RATING">관람등급</label><br>
+                                <input type="text" id="AGE_RATING" name="AGE_RATING"><br><br>
+
+                                <button type="submit">등록</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 등록 모달 끝 -->
+        </aside>
+        <!-- 사이드바 끝 -->
+			
+			
+        <div class="content-area"><br>
+			<!-- 애니 제목 카드 리스트 -->
+			<div class="anime-title-card-list">
+			    <div class="anime-title-card"
+			        th:each="item : ${mergedList}"
+			        th:data-title="${item.ms.TITLE}"
+			        th:data-id="${item.ms.ANIME_ID}"
+			        th:data-garo-url="${item.ms.THUMNAIL_GARO_URL}"
+			        th:data-sero-url="${item.ms.THUMNAIL_SERO_URL}"
+			        th:data-weekday="${item.ms.WEEKDAY}"
+			        th:data-score="${item.ms.SCORE}"
+			        th:data-tags="${item.ms.TAGS}"
+			        th:data-oc-id="${item.oc.ANIME_ID}"
+			        th:data-desc="${item.oc.ANIME_DESC}"
+			        th:data-start-date="${item.oc.START_DATE}"
+			        th:data-total-episode="${item.oc.TOTAL_EPISODE}"
+			        th:data-current-episode="${item.oc.CURRENT_EPISODE}"
+			        th:data-studio="${item.oc.STUDIO}"
+			        th:data-studio-link="${item.oc.STUDIO_LINK}"
+			        th:data-oc-score="${item.oc.ANIME_SCORE}"
+			        th:data-age-rating="${item.oc.AGE_RATING}"
+			        th:text="${item.ms.TITLE}"
+			        onclick="openEditModal(this)"
+			        >
+			    </div>
+			</div>
+			
+			<!-- 애니 제목 카드 리스트 끝 -->
+			
+			<!-- 수정 모달 시작 -->
+			<div id="editModal" class="modal">
+			    <div class="modal-content">
+			        <span class="close-first">&times;</span>
+								
+			        <!-- 수정 옵션 선택 -->
+			        <div id="editOptions">
+			            <h4>수정할 항목을 선택하세요:</h4>
+			            <button onclick="openInfoEditForm()">정보 수정하기</button>
+			            <button onclick="openDetailEditForm()">상세 정보 수정하기</button>
+			            <button onclick="del()">삭제하기</button>
+			        </div>
+			        
+			        <!-- 정보 수정 폼 -->
+			        <div id="infoEditForm" style="display: none;">
+			        
+				    <form action="/Admin/edit_basic" method="post" enctype="multipart/form-data">
+				        <h4>기본 정보 수정</h4>
+				
+						<input type="hidden" id="BASIC-ANIME_ID" name="ANIME_ID">
+				
+				        <label for="TITLE">제목</label><br>
+				        <input type="text" id="BASIC-TITLE" name="TITLE" required><br><br>
+				
+				        <label for="THUMNAIL_GARO_URL">가로 이미지</label><br>
+				        <input type="file" id="BASIC-THUMNAIL_GARO_URL" name="THUMNAIL_GARO_URL" accept="image/*" onchange="previewImage(this, 'preview-garo')"><br><br>
+						<img id="preview-garo" src="" alt="가로 미리보기" style="max-width: 200px; display: block; margin-top: 10px;"><br><br>
+				
+				
+				        <label for="THUMNAIL_SERO_URL">세로 이미지</label><br>
+				        <input type="file" id="BASIC-THUMNAIL_SERO_URL" name="THUMNAIL_SERO_URL" accept="image/*" onchange="previewImage(this, 'preview-sero')"><br><br>
+						<img id="preview-sero" src="" alt="세로 미리보기" style="max-width: 200px; display: block; margin-top: 10px;"><br><br>	
+						
+				        <label>요일</label><br>
+				        <input type="checkbox" name="BASIC-WEEKDAY" value="월요일"> 월요일
+				        <input type="checkbox" name="BASIC-WEEKDAY" value="화요일"> 화요일
+				        <input type="checkbox" name="BASIC-WEEKDAY" value="수요일"> 수요일
+				        <input type="checkbox" name="BASIC-WEEKDAY" value="목요일"> 목요일
+				        <input type="checkbox" name="BASIC-WEEKDAY" value="금요일"> 금요일
+				        <input type="checkbox" name="BASIC-WEEKDAY" value="토요일"> 토요일
+				        <input type="checkbox" name="BASIC-WEEKDAY" value="일요일"> 일요일<br><br>
+				
+				        <label for="SCORE">별점</label><br>
+				        <input type="number" id="BASIC-SCORE" name="SCORE" step="0.5" min="0" max="5" value="0"><br><br>
+				
+				        <label for="TAGS">태그 (장르)</label><br>
+				        <input type="text" id="BASIC-TAGS" name="TAGS"><br><br>
+				
+				        <button type="submit">수정 완료</button>
+				    </form>
+				</div>
+			
+			        <!-- 상세 정보 수정 폼 -->
+			        <div id="detailEditForm" style="display: none;">
+			            <form action="/Admin/edit_detail" method="post">
+			                <h4>상세 정보 수정</h4>
+			                
+			                <input type="hidden" id="DETAIL-ANIME_ID" name="ANIME_ID">
+			
+			                <label for="ANIME_DESC">줄거리</label><br>
+			                <textarea id="DETAIL-ANIME_DESC" name="ANIME_DESC" rows="5" cols="40" required></textarea><br><br>
+			
+			                <label for="START_DATE">방영 시작일</label><br>
+			                <input type="text" id="DETAIL-START_DATE" name="START_DATE"><br><br>
+			
+			                <label for="TOTAL_EPISODE">총 회차수</label><br>
+			                <input type="text" id="DETAIL-TOTAL_EPISODE" name="TOTAL_EPISODE"><br><br>
+			
+			                <label for="CURRENT_EPISODE">현재 회차</label><br>
+			                <input type="text" id="DETAIL-CURRENT_EPISODE" name="CURRENT_EPISODE"><br><br>
+			
+							<label for="STUDIO">제작사</label><br>
+			                <input type="text" id="DETAIL-STUDIO" name="STUDIO"><br><br>
+			
+							<label for="STUDIO_LINK">제작사 링크</label><br>
+			                <input type="text" id="DETAIL-STUDIO_LINK" name="STUDIO_LINK"><br><br>
+			
+			                <label for="ANIME_SCORE">상세 별점</label><br>
+			                <input type="number" id="DETAIL-ANIME_SCORE" name="ANIME_SCORE" step="0.5" min="0" max="5" value="0"><br><br>
+			
+			                <label for="AGE_RATING">관람등급</label><br>
+			                <input type="text" id="DETAIL-AGE_RATING" name="AGE_RATING"><br><br>
+			                
+			                
+			
+			                <button type="submit">수정 완료</button>
+			            </form>
+			        </div>
+			        
+			        <form id="deleteForm" action="/Admin/deleteAnime" method="post" style="display: none;">
+			        	<input type="hidden" name="animeId" id="deleteAnimeId">
+			        </form>
+			    </div>
+			</div>
+			<!-- 수정 모달 끝 -->
+        </div>
+    </div>
+
+</body>
+<!-- 검색 -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const searchInput = document.getElementById('search-input');
+    const searchForm = document.querySelector('.search-box');
+    const listContainer = document.querySelector('.anime-title-card-list');
+    let keyword = '';
+    let composing = false;
+
+    // ✅ 폼 제출 막기
+    searchForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+    });
+
+    // ✅ 한글 조합 시작 감지
+    searchInput.addEventListener('compositionstart', () => {
+      composing = true; // 조합 시작 시 true
+    });
+
+    // ✅ 한글 조합 끝났을 때
+    searchInput.addEventListener('compositionend', (e) => {
+      composing = false; // 조합 끝나면 false
+      keyword = e.target.value.trim(); // 검색어 가져오기
+      triggerSearch(); // 검색 트리거
+    });
+
+    // ✅ 입력 이벤트로 실시간 검색
+    searchInput.addEventListener('input', function () {
+      if (!composing) {  // 한글 조합 중이 아닐 때만 반응
+        keyword = this.value.trim(); // 검색어 가져오기
+        triggerSearch(); // 검색 트리거
+      }
+    });
+
+    // ✅ 엔터 눌렀을 때도 검색
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !composing) {  // 한글 조합 중이 아닐 때
+        keyword = searchInput.value.trim(); // 검색어 가져오기
+        triggerSearch(); // 검색 트리거
+        e.preventDefault(); // 폼 제출 막기
+      }
+    });
+
+    // ✅ 검색 함수: 제목 기준 필터링
+    function triggerSearch() {
+      const keywordLower = keyword.toLowerCase();
+      const cards = listContainer.querySelectorAll('.anime-title-card');
+      let visibleCount = 0;
+
+      cards.forEach(card => {
+        const title = card.getAttribute('data-title')?.toLowerCase() || '';
+        if (title.includes(keywordLower)) {
+          card.style.display = 'block'; // 검색어가 포함되면 보이게
+          visibleCount++;
+        } else {
+          card.style.display = 'none'; // 포함되지 않으면 숨기기
+        }
+      });
+
+      // 검색 후에도 가나다순 정렬 유지
+      sortAnimeCardsByTitle();
+    }
+
+    // ✅ 가나다순 정렬
+    function sortAnimeCardsByTitle() {
+      const cards = Array.from(listContainer.querySelectorAll('.anime-title-card'));
+
+      cards.sort((a, b) => {
+        const titleA = a.getAttribute('data-title')?.toLowerCase() || '';
+        const titleB = b.getAttribute('data-title')?.toLowerCase() || '';
+        return titleA.localeCompare(titleB, 'ko'); // 가나다순 정렬
+      });
+
+      // 정렬된 순서대로 다시 붙이기
+      cards.forEach(card => listContainer.appendChild(card));
+    }
+
+    // ✅ 페이지 처음 로딩될 때도 정렬
+    sortAnimeCardsByTitle();
+  });
+</script>
+
+<!-- 검색 끝 -->
+
+
+<!-- 등록 모달 스크립트 시작 -->
+<script>
+  // 모달 열기
+  document.getElementById("open-insert").onclick = function (e) {
+    e.preventDefault();
+    document.getElementById("combinedModal").style.display = "block";
+  };
+
+  // 모달 닫기
+  document.querySelector(".close-insert").onclick = function () {
+    document.getElementById("combinedModal").style.display = "none";
+  };
+
+  // 이미지 미리보기
+  function previewImage(input, previewId) {
+    const preview = document.getElementById(previewId);
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        preview.src = e.target.result;
+        preview.style.display = "block";
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+</script>
+<!-- 등록 모달 스크립트 끝 -->
+
+<!-- 개열받네 -->
+<script>
+  function openEditModal(element) {
+    const animeId = element.getAttribute("data-id");
+    const animeTitle = element.getAttribute("data-title");
+    const garoUrl = element.getAttribute("data-garo-url");
+    const seroUrl = element.getAttribute("data-sero-url");
+    const weekday = element.getAttribute("data-weekday");
+    const score = element.getAttribute("data-score");
+    const tags = element.getAttribute("data-tags");
+
+    const animeIdoc = element.getAttribute("data-oc-id");
+    const animeDesc = element.getAttribute("data-desc");
+    const animeSd = element.getAttribute("data-start-date");
+    const animeTe = element.getAttribute("data-total-episode");
+    const animeCe = element.getAttribute("data-current-episode");
+    const animeStudio = element.getAttribute("data-studio");
+    const animeLink = element.getAttribute("data-studio-link");
+    const animeScore = element.getAttribute("data-oc-score");
+    const animeAr = element.getAttribute("data-age-rating");
+
+    function previewImage(input, previewId) {
+      const preview = document.getElementById(previewId);
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          preview.src = e.target.result;
+          preview.style.display = "block";
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    currentAnimeId = element.getAttribute("data-id"); // <-- 여기에 animeId 저장
+
+    // 모달 열기
+    document.getElementById('editModal').style.display = "block";
+
+    // 값 채우기 (폼은 보이기 전에도 미리 세팅)
+    document.getElementById('BASIC-ANIME_ID').value = animeId;
+
+    document.getElementById('BASIC-TITLE').value = animeTitle;
+
+    document.getElementById('BASIC-SCORE').value = score;
+
+    document.getElementById('BASIC-TAGS').value = tags;
+
+    document.getElementById("preview-garo").src = garoUrl;
+
+    document.getElementById("preview-sero").src = seroUrl;
+
+    // 요일 체크박스 초기화 후 설정
+    document.querySelectorAll('input[name="BASIC-WEEKDAY"]').forEach(cb => cb.checked = false);
+    if (weekday) {
+      const weekdays = weekday.split(',');
+      document.querySelectorAll('input[name="BASIC-WEEKDAY"]').forEach(cb => {
+        cb.checked = weekdays.includes(cb.value);
+      });
+    }
+    // 기본 정보 값 채우기 끝
+
+    // 상세 정보 값 채우기
+
+    document.getElementById('DETAIL-ANIME_ID').value = animeId;
+
+    document.getElementById('DETAIL-ANIME_DESC').value = animeDesc;
+
+    document.getElementById('DETAIL-START_DATE').value = animeSd;
+
+    document.getElementById('DETAIL-TOTAL_EPISODE').value = animeTe;
+
+    document.getElementById('DETAIL-CURRENT_EPISODE').value = animeCe;
+
+    document.getElementById('DETAIL-STUDIO').value = animeStudio;
+
+    document.getElementById('DETAIL-STUDIO_LINK').value = animeLink;
+
+    document.getElementById('DETAIL-ANIME_SCORE').value = animeScore;
+
+    document.getElementById('DETAIL-AGE_RATING').value = animeAr;
+
+    // 폼은 기본적으로 안 보이게 설정 (수정 버튼 클릭 시 보이게)
+    document.getElementById('infoEditForm').style.display = "none";
+    document.getElementById('detailEditForm').style.display = "none";
+    // 끝
+  }
+
+  function closeModal() {
+    document.getElementById('editModal').style.display = "none";
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const closeBtn = document.querySelector('.close-first');
+    if (closeBtn) {
+      closeBtn.onclick = closeModal;
+    }
+  });
+
+  function openInfoEditForm() {
+    document.getElementById('infoEditForm').style.display = "block";
+    document.getElementById('detailEditForm').style.display = "none";
+  }
+
+  function openDetailEditForm() {
+    document.getElementById('detailEditForm').style.display = "block";
+    document.getElementById('infoEditForm').style.display = "none";
+  }
+
+  function del() {
+    if (confirm("삭제하시겠습니까?")) {
+      alert("삭제가 진행됩니다.");
+      document.getElementById("deleteAnimeId").value = currentAnimeId;
+      document.getElementById("deleteForm").submit();
+    } else {
+      alert("삭제가 취소되었습니다.");
+    }
+  }
+</script>
+<!-- 진짜개열받기끝 -->
+<script>
+function syncScore() {
+    fetch("/Admin/syncScore", { method: "POST" })
+        .then(res => res.text())
+        .then(msg => alert(msg))
+        .catch(err => alert("오류 발생: " + err));
+}
+</script>
+<script src="/js/navbar.js"></script>
+</html>

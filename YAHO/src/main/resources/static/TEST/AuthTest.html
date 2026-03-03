@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>이메일 인증</title>
+  <style>
+    .hidden { display: none; }
+    .readonly { background-color: #eee; }
+    .timer { color: red; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h2>이메일 인증</h2>
+
+  <!-- 이메일 입력 -->
+  <label>이메일: <input type="email" id="emailInput"></label>
+  <button id="sendBtn" onclick="sendAuthCode()">전송</button>
+  <span id="sendStatus"></span>
+
+  <!-- 인증코드 입력 -->
+  <div id="verifySection" class="hidden">
+    <br>
+    <label>인증코드: <input type="text" id="codeInput"></label>
+    <button onclick="verifyCode()">인증</button>
+    <div class="timer" id="timer">10:00</div>
+  </div>
+
+  <script>
+    let resendAllowed = true;
+    let timerInterval = null;
+    let countdown = 600; // 10분
+    let preventUnload = true;
+
+    function sendAuthCode() {
+    	  const email = document.getElementById("emailInput").value;
+    	  const btn = document.getElementById("sendBtn");
+
+    	  if (!email) {
+    	    alert("이메일을 입력하세요.");
+    	    return;
+    	  }
+
+    	  if (!resendAllowed) {
+    	    alert("재인증은 2분마다 가능합니다.");
+    	    return;
+    	  }
+
+    	  // ✅ 중복 이메일 체크
+    	  fetch(`/Auth/check-duplicate?email=${encodeURIComponent(email)}`)
+    	    .then(res => {
+    	      if (!res.ok) throw res;
+    	      return res.text();
+    	    })
+    	    .then(() => {
+    	      // ✅ 중복이 아니므로 인증코드 전송 진행
+    	      // 기존 sendAuthCode 내부의 Ajax 요청 이어서 작성
+    	      fetch("/Auth/send", {
+    	        method: "POST",
+    	        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    	        body: `email=${encodeURIComponent(email)}`
+    	      })
+    	        .then(response => {
+    	          if (!response.ok) throw response;
+    	          return response.text();
+    	        })
+    	        .then(msg => {
+    	          alert(msg);
+    	          document.getElementById("emailInput").readOnly = true;
+    	          document.getElementById("emailInput").classList.add("readonly");
+    	          document.getElementById("sendStatus").innerText = msg;
+    	          btn.innerText = "재전송";
+
+    	          showVerifySection();
+    	          startTimer();
+    	          resendAllowed = false;
+    	          setTimeout(() => resendAllowed = true, 2 * 60 * 1000);
+    	        })
+    	        .catch(async err => {
+    	          const msg = await err.text();
+    	          alert(msg);
+    	          resetToInitialState();
+    	        });
+    	    })
+    	    .catch(async err => {
+    	      const msg = await err.text();
+    	      alert(msg); // "이미 존재하는 이메일입니다"
+    	    });
+    	}
+
+
+    function showVerifySection() {
+      document.getElementById("verifySection").classList.remove("hidden");
+    }
+
+    function verifyCode() {
+    	  const email = document.getElementById("emailInput").value;
+    	  const code = document.getElementById("codeInput").value;
+
+    	  if (!code) {
+    	    alert("인증코드를 입력하세요.");
+    	    return;
+    	  }
+
+    	  fetch("/Auth/verify", {
+    	    method: "POST",
+    	    headers: {
+    	      "Content-Type": "application/x-www-form-urlencoded"
+    	    },
+    	    body: `email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`
+    	  })
+    	    .then(response => {
+    	      if (!response.ok) throw response;
+    	      return response.text();
+    	    })
+    	    .then(msg => {
+			  alert(msg); // "인증에 성공했습니다."
+			  preventUnload = false;
+			
+			  // ✅ 0.1초 지연 후 페이지 이동 (이탈 경고 방지용)
+			  setTimeout(() => {
+				  window.location.href = "/User/User_InsertForm?USER_EMAIL=" + email;
+			  }, 100);
+			})
+
+    	    .catch(async err => {
+    	      const msg = await err.text();
+    	      alert(msg); // "코드가 올바르지 않습니다", "만료되었습니다" 등
+    	      document.getElementById("codeInput").value = "";
+    	    });
+    	}
+
+    let endTime;
+
+    function startTimer() {
+      clearInterval(timerInterval);
+      const duration = 10 * 60 * 1000; // 10분
+      endTime = Date.now() + duration;
+
+      timerInterval = setInterval(() => {
+        const now = Date.now();
+        const remaining = Math.max(0, endTime - now);
+
+        const minutes = Math.floor(remaining / 60000);
+        const seconds = Math.floor((remaining % 60000) / 1000);
+        document.getElementById("timer").innerText =
+          `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+        if (remaining <= 0) {
+          clearInterval(timerInterval);
+          alert("인증 시간이 만료되었습니다. 다시 인증을 수행해주세요.");
+
+          const email = document.getElementById("emailInput").value;
+          fetch(`/Auth/expire?email=${encodeURIComponent(email)}`, { method: "DELETE" });
+
+          resetToInitialState();
+        }
+      }, 1000);
+    }
+
+    function resetToInitialState() {
+		document.getElementById("emailInput").readOnly = false;
+      	document.getElementById("emailInput").value = "";
+      	document.getElementById("emailInput").classList.remove("readonly");
+      	document.getElementById("sendBtn").innerText = "전송";
+      	document.getElementById("sendStatus").innerText = "";
+      	document.getElementById("verifySection").classList.add("hidden");
+      	document.getElementById("codeInput").value = "";
+      	document.getElementById("timer").innerText = "10:00";
+      	
+      	resendAllowed = true;
+    }
+    
+    window.onbeforeunload = function (e) {
+    	if (!preventUnload) return undefined; // ✅ 경고창 띄우지 않음
+
+    	e.preventDefault();
+    	e.returnValue = '페이지를 벗어나면 인증 정보가 사라집니다. 계속하시겠습니까?';
+    };
+
+ 	// ✅ 커스텀 confirm 창 기반 이탈 방지
+    window.addEventListener("beforeunload", function (e) {
+      if (!preventUnload) return;
+
+      const shouldLeave = confirm("지금 페이지를 벗어나면 이메일 인증이 취소됩니다. 나가시겠습니까?");
+      if (shouldLeave) {
+        // ✅ 서버에 인증 정보 삭제 요청
+        const email = document.getElementById("emailInput").value;
+        if (email) {
+          navigator.sendBeacon("/Auth/expire", new URLSearchParams({ email }));
+        }
+
+        // ✅ preventUnload false로 설정해 이후 이벤트 막지 않음
+        preventUnload = false;
+      } else {
+        e.preventDefault();
+        e.returnValue = ''; // 일부 브라우저 호환
+      }
+    });
+
+    window.addEventListener("unload", function () {
+    	  if (!preventUnload) return;
+
+    	  const email = document.getElementById("emailInput").value;
+    	  if (email) {
+    	    const data = new URLSearchParams({ email });
+    	    navigator.sendBeacon("/Auth/expire", data);
+    	  }
+    });
+</script>
+</body>
+</html>

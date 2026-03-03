@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>로그인 | YAHO</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="/CSS/User.css" rel="stylesheet">
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<!-- favicon -->
+<link rel="icon" href="/IMG/favicon/favicon.ico" type="image/x-icon">
+</head>
+<script>
+	function send(){
+		if(user.USER_ID.value==""){
+			alert("아이디를 입력하세요");
+			user.USER_ID.focus();
+			return;
+		}
+		if(user.USER_PASSWORD.value==""){
+			alert("비밀번호를 입력하세요");
+			user.USER_PASSWORD.focus();
+			return;
+		}
+		user.submit();
+	}
+</script>
+<body>
+<div class="login-wrapper">
+	<div class="login-box">	
+	<!-- 로그인 폼 -->
+		<form name="user" method="post" th:action="@{/User/User_Login}" class="login-form">
+			<h1>로그인</h1>
+			<input type=text name="USER_ID" maxlength=16 placeholder="아이디를 입력하세요">
+			<input type=password name="USER_PASSWORD" id="password" maxlength=12 placeholder="비밀번호를 입력하세요">
+			<!-- <img src="/IMG/loginbutton2.png" onClick="send()"> -->
+			<button type="button" class="login-submit-btn" onClick="send()">로그인</button>
+	
+	<!-- 계정 찾기 버튼 -->
+		<div class="account-recovery-links">
+	  		<a href="#" onclick="openFindId()">아이디 찾기</a>
+	  		<a href="#" onclick="openFindPw()">비밀번호 찾기</a>
+		</div>
+	
+		</form>
+	</div><!-- .login-box -->
+</div><!-- .login-wrapper -->
+ 
+
+  	<!-- ✅ ID 찾기 모달 -->
+	<div id="findIdModal" class="modal">
+		
+		<h3 class="findname">아이디 찾기</h3>
+		
+		<!-- 이메일 입력 -->
+		<input type="email" id="findIdEmail" class="findinput" placeholder="가입한 이메일 입력">
+		<div id="findIdResult" class="findresult"></div>
+		
+		<div class="findbutton-container">
+			<!-- ID 찾기 버튼 -->
+			<button id="findIdBtn" class="findbutton" onclick="submitFindId()">ID 찾기</button>
+			<span id="findIdDelay"></span>
+			<!-- 닫기 버튼 -->
+			<button class="findbutton" onclick="closeFindIdModal()">닫기</button>
+		</div>
+	</div>
+
+	<!-- ✅ 비밀번호 찾기 모달 -->
+	<div id="findPwModal" class="modal">
+		
+		<h3 class="findname">비밀번호 찾기</h3>
+
+	    <!-- 아이디와 이메일 입력 -->
+		<input type="text" id="findPwId" class="findinput" placeholder="아이디 입력">
+		
+		<input type="email" id="findPwEmail" class="findinput" placeholder="이메일 입력">
+
+		<div id="findPwResult" class="findresult"></div>
+		
+		<!-- reCAPTCHA -->
+		<div class="g-recaptcha-wrapper">
+			<div class="g-recaptcha" data-sitekey="6LfUSyArAAAAAFd72_SuYgkIYMEhS1l1Mzxcco_b"></div>
+		</div>
+		<div class="findbutton-container">
+			<!-- 비밀번호 재설정 버튼 -->
+			<button id="findPwBtn" class="findbutton" onclick="submitFindPw()">비밀번호 재설정</button>
+			<span id="findPwDelay"></span>
+			<button class="findbutton" onclick="closeFindPwModal()">닫기</button>
+		</div>
+	</div>
+	
+	<!-- ❗ 로그인 실패 모달창 -->
+	<div id="modalOverlay"></div>
+	<div id="errorModal" class="modal">
+		<p id="errorModalMessage" th:text="${error}">에러 메시지</p>
+	<div style="text-align:center;">
+		<button onclick="closeErrorModal()">확인</button>
+	</div>
+</div>
+</body>
+
+<!-- ID 찾기 -->
+<script>
+let findIdDelayTimer = null;
+let findIdDelayRemaining = 0;
+
+  	//모달 함수
+  	function openFindId() {
+	  document.getElementById("findIdModal").style.display = "block";
+	  document.getElementById("findIdEmail").value = "";
+	  document.getElementById("findIdResult").innerText = "";
+	}
+
+	function closeFindIdModal() {
+	  document.getElementById("findIdModal").style.display = "none";
+	}
+
+	// ID 찾기
+	function submitFindId() {
+	  const email = document.getElementById("findIdEmail").value;
+	  const resultBox = document.getElementById("findIdResult");
+	  const btn = document.getElementById("findIdBtn");
+
+	  if (!email) {
+	    resultBox.style.color = "red";
+	    resultBox.innerText = "이메일을 입력해 주세요.";
+	    return;
+	  }
+
+	  if (btn.disabled) {
+	    resultBox.style.color = "red";
+	    resultBox.innerText = "2분 후에 다시 시도해 주세요.";
+	    return;
+	  }
+
+	  fetch(`/Auth/find-id/send?email=${encodeURIComponent(email)}`)
+	    .then(res => {
+	      if (!res.ok) throw res;
+	      return res.text();
+	    })
+	    .then(msg => {
+	      resultBox.style.color = "green";
+	      resultBox.innerText = "입력하신 이메일로 아이디를 전송했습니다.";
+
+	      // ✅ 2분 제한 시작
+	      startFindIdDelay();
+	    })
+	    .catch(async err => {
+	      const msg = await err.text();
+	      resultBox.style.color = "red";
+	      resultBox.innerText = msg || "존재하지 않는 이메일입니다.";
+	    });
+	}
+
+	// 딜레이 함수
+	function startFindIdDelay() {
+	  const btn = document.getElementById("findIdBtn");
+	  const delayBox = document.getElementById("findIdDelay");
+
+	  btn.disabled = true;
+	  findIdDelayRemaining = 120; // 2분
+
+	  findIdDelayTimer = setInterval(() => {
+	    findIdDelayRemaining--;
+
+	    const m = String(Math.floor(findIdDelayRemaining / 60)).padStart(2, '0');
+	    const s = String(findIdDelayRemaining % 60).padStart(2, '0');
+	    delayBox.innerText = `재요청 가능: ${m}:${s}`;
+
+	    if (findIdDelayRemaining <= 0) {
+	      clearInterval(findIdDelayTimer);
+	      delayBox.innerText = "";
+	      btn.disabled = false;
+	    }
+	  }, 1000);
+	}
+
+
+
+  </script>
+  
+<!-- PW 찾기 -->
+<script>
+let findPwDelayTimer = null;
+let findPwDelayRemaining = 0;
+
+	function openFindPw() {
+	  document.getElementById("findPwModal").style.display = "block";
+	  document.getElementById("findPwId").value = "";
+	  document.getElementById("findPwEmail").value = "";
+	  document.getElementById("findPwResult").innerText = "";
+	}
+
+	function closeFindPwModal() {
+	  document.getElementById("findPwModal").style.display = "none";
+	}
+
+	function submitFindPw() {
+		const captchaResponse = grecaptcha.getResponse();
+		if (!captchaResponse) {
+		  alert("로봇이 아님을 확인해 주세요.");
+		  return;
+		}
+
+	  const userId = document.getElementById("findPwId").value;
+	  const email = document.getElementById("findPwEmail").value;
+	  const resultBox = document.getElementById("findPwResult");
+
+	  if (!userId || !email) {
+	    resultBox.style.color = "red";
+	    resultBox.innerText = "아이디와 이메일을 모두 입력해 주세요.";
+	    return;
+	  }
+
+	  fetch("/Auth/find-pw/reset", {
+	    method: "POST",
+	    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+	    body: `userId=${encodeURIComponent(userId)}&email=${encodeURIComponent(email)}&captcha=${captchaResponse}`
+	  })
+	    .then(res => {
+	      if (!res.ok) throw res;
+	      return res.text();
+	    })
+	    .then(msg => {
+		  resultBox.style.color = "green";
+		  resultBox.innerText = "입력한 이메일로 임시 비밀번호를 전송했습니다.";
+		
+		  startFindPwDelay(); // ✅ 타이머 시작
+		})
+
+	    .catch(async err => {
+	      const msg = await err.text();
+	      resultBox.style.color = "red";
+	      resultBox.innerText = msg || "일치하는 회원 정보가 없습니다.";
+	    });
+	}
+	
+	function startFindPwDelay() {
+		  const btn = document.getElementById("findPwBtn");
+		  const delayBox = document.getElementById("findPwDelay");
+
+		  btn.disabled = true;
+		  findPwDelayRemaining = 120; // 2분
+
+		  findPwDelayTimer = setInterval(() => {
+		    findPwDelayRemaining--;
+
+		    const m = String(Math.floor(findPwDelayRemaining / 60)).padStart(2, '0');
+		    const s = String(findPwDelayRemaining % 60).padStart(2, '0');
+		    delayBox.innerText = `재요청 가능: ${m}:${s}`;
+
+		    if (findPwDelayRemaining <= 0) {
+		      clearInterval(findPwDelayTimer);
+		      delayBox.innerText = "";
+		      btn.disabled = false;
+		    }
+		  }, 1000);
+		}
+
+</script>
+<script th:inline="javascript">
+/*<![CDATA[*/
+const errorMessage = /*[[${error}]]*/ '';
+if (errorMessage && errorMessage.trim().length > 0) {
+	document.getElementById("errorModal").style.display = "block";
+	document.getElementById("modalOverlay").style.display = "block";
+}
+
+function closeErrorModal() {
+	document.getElementById("errorModal").style.display = "none";
+	document.getElementById("modalOverlay").style.display = "none";
+}
+/*]]>*/
+</script>
+
+</html>

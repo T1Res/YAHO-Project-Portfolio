@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>평점 통계</title>
+    
+</head>
+<body>
+
+<div th:fragment="chartFragment">
+    <!-- 막대 그래프 -->
+    <div style="width: 350px; margin: 20px auto;">
+        <canvas id="myChart" width="200" height="200"></canvas>
+    </div>
+</div>
+    <script th:inline="javascript">
+    /*<![CDATA[*/
+        let voteLabels = /*[[${scoreList}]]*/ [];
+        let voteCounts = /*[[${countList}]]*/ [];
+    /*]]>*/
+    </script>
+
+    <script>
+    
+    </script>
+
+
+
+</body>
+</html>

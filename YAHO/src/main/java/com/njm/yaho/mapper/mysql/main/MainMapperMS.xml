@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.njm.yaho.mapper.mysql.main.MainMapperMS">
+	<select id="getTodayAnimeList" resultType="com.njm.yaho.domain.mysql.main.MainMSDTO">
+		SELECT 
+			ANIME_ID as animeId,
+			TITLE,
+			THUMNAIL_GARO_URL AS thumnailGaroUrl,
+			THUMNAIL_SERO_URL AS thumnailSeroUrl,
+			WEEKDAY,
+			SCORE AS score,
+			TAGS
+    	FROM 
+    		TBL_ANIME
+    	WHERE 
+    		WEEKDAY IS NOT NULL
+      	AND 
+      		WEEKDAY LIKE CONCAT('%', #{today}, '%')
+      	ORDER BY 
+      		TITLE
+	</select>
+
+	<select id="getAnimeBaseInfo" resultType="com.njm.yaho.domain.mysql.main.MainMSDTO">
+		SELECT
+			TITLE AS title,
+			THUMNAIL_GARO_URL AS thumnailGaroUrl
+		FROM
+			TBL_ANIME
+		WHERE
+			ANIME_ID = #{animeId}
+	</select>
+	
+	<!-- 애니 랭킹 TOP10 가져오기 -->
+	<select id="selectTop10AnimeByScore" resultType="com.njm.yaho.domain.mysql.main.MainMSDTO">
+		SELECT 
+            ANIME_ID as animeId,
+			TITLE,
+			THUMNAIL_GARO_URL AS thumnailGaroUrl,
+			THUMNAIL_SERO_URL AS thumnailSeroUrl,
+			WEEKDAY,
+			SCORE AS score,
+			TAGS
+        FROM (
+            SELECT * 
+            FROM TBL_ANIME
+            ORDER BY SCORE DESC
+            LIMIT 10
+        ) AS A
+	</select>
+</mapper>

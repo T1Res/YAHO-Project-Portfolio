@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<link rel="stylesheet" href="/CSS/gender.css">
+<body>
+	<div class="gender-overlay-container">
+  <img src="/IMG/gender_icon.png" alt="남녀 아이콘" class="gender-icon" />
+
+  <!-- 남성 비율 -->
+  <div class="gender-overlay male" th:style="'width:' + ${maleRatio} + '%'"></div>
+
+  <!-- 여성 비율 -->
+  <div class="gender-overlay female" th:style="'width:' + ${femaleRatio} + '%; left:' + ${maleRatio} + '%'"></div>
+</div>
+
+<!-- 설명 텍스트 -->
+<div class="gender-ratio-labels">
+  <span th:text="'남성: ' + ${maleRatio} + '%'"></span> | 
+  <span th:text="'여성: ' + ${femaleRatio} + '%'"></span>
+</div>
+	
+</body>
+</html>

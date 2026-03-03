@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>회원정보 수정 | YAHO</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <link href="/CSS/User.css" rel="stylesheet">
+  <!-- favicon -->
+<link rel="icon" href="/IMG/favicon/favicon.ico" type="image/x-icon">
+</head>
+<body>
+<div class="profile-modify-container">
+<form name="user" method="post" enctype="multipart/form-data" th:action="@{/User/User_Modify}">
+  <table align="center" border="0" width="600" cellpadding="6" cellspacing="0">
+    <tr>
+    	<th colspan="2"><h2>회원정보 수정</h2></th>
+    </tr>
+
+    <!-- 프로필 사진 -->
+    <tr>
+      <td>프로필사진</td>
+      <td>
+        <label id="profileLabel">
+          <img th:src="@{${dto.USER_PROFILE_IMG} + '?v=' + ${timestamp}}" />
+        </label>
+        <input type="file" name="USER_PROFILE_PATH" id="USER_PROFILE_PATH" accept="image/*" onchange="validateProfileImage(event)">
+        <p id="profile-error-message" style="color:red; display:none;">파일 크기는 5MB 이하만 가능합니다.</p>
+      </td>
+    </tr>
+
+    <!-- 이름 -->
+    <tr>
+      <td>이름</td>
+      <td><input type="text" name="USER_NICKNAME" th:value="${dto.USER_NICKNAME}" maxlength="20"></td>
+    </tr>
+
+    <!-- ID -->
+    <tr>
+      <td>ID</td>
+      <td>
+        <input type="text" name="USER_ID" th:value="${dto.USER_ID}" readonly style="width: 120px;">
+        <span>[수정 불가]</span>
+      </td>
+    </tr>
+
+    <!-- 비밀번호 -->
+    <tr>
+      <td>비밀번호</td>
+      <td><input type="password" name="USER_PASSWORD" id="USER_PASSWORD" maxlength="12"></td>
+    </tr>
+
+    <!-- 비밀번호 확인 -->
+    <tr>
+      <td>비밀번호 확인</td>
+      <td>
+        <input type="password" name="repasswd" id="repasswd" maxlength="12">
+        <span id="repasswd_c" style="color:red;">비밀번호를 한 번 더 입력해주세요.</span>
+      </td>
+    </tr>
+
+    <!-- 성별 선택 -->
+    <tr>
+      <td>성별</td>
+      <td>
+        <label><input type="radio" name="USER_GENDER" value="1" th:checked="${dto.USER_GENDER == 1}"> 남자</label>
+        <label><input type="radio" name="USER_GENDER" value="2" th:checked="${dto.USER_GENDER == 2}"> 여자</label>
+      </td>
+    </tr>
+
+    <!-- 이메일 -->
+    <tr>
+      <td>이메일</td>
+      <td>
+        <input type="text" name="USER_EMAIL" th:value="${dto.USER_EMAIL}" readonly style="width: 120px;">
+      	<span>[수정 불가]</span>
+      </td>
+    </tr>
+
+    <!-- 한줄소개 -->
+    <tr>
+      <td>한줄소개</td>
+      <td><input type="text" name="USER_BIO" size="60" th:value="${dto.USER_BIO}"></td>
+    </tr>
+
+    <!-- 버튼 -->
+    <tr class="profile-button">
+      <td colspan="2" align="center">
+        <button type="button" onclick="send()">수정</button>
+        <button type="button" onclick="history.back()">취소</button>
+      </td>
+    </tr>
+  </table>
+</form>
+</div>
+
+<script>
+  
+
+  function send() {
+    const pwd = document.getElementById("USER_PASSWORD").value;
+    const repwd = document.getElementById("repasswd").value;
+    if (pwd === "") {
+      alert("비밀번호를 입력하세요.");
+      return;
+    }
+    if (pwd !== repwd) {
+      alert("비밀번호가 일치하지 않습니다.");
+      return;
+    }
+    document.forms["user"].submit();
+  }
+
+  function validateProfileImage(event) {
+    const file = event.target.files[0];
+    const maxSize = 5 * 1024 * 1024;
+    const errorMsg = document.getElementById("profile-error-message");
+
+    if (file && file.size > maxSize) {
+      errorMsg.style.display = 'block';
+      event.target.value = '';
+    } else {
+      errorMsg.style.display = 'none';
+    }
+  }
+</script>
+
+</body>
+</html>

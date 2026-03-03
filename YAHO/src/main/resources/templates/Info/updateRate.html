@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>수정 평점 테스트</title>
+<link rel="stylesheet" th:href="@{/CSS/test3.css}">
+</head>
+
+<body>
+	
+		<table>
+			<div class="wrap">
+				<h1>게시판 목록</h1>
+				<!-- 회원이 벌써 작성한 내용이 존재한다면 맨 위로-->
+				<div th:if="${!#strings.isEmpty(Aluser_ID)}">
+					<!-- 사용자 아이디 -->
+					<div style="color: white;">
+						<strong th:text="${Aldto.USER_ID}">작성자</strong> :
+					</div>
+
+					<!-- 별점 표시 -->
+					<div style="color: gold; font-size: 20px; margin-top: 4px;">
+						<span th:if="${Aldto.SCORE_SCORE == 0.5}"> <img
+							src="/IMG/star_half.png" width="20" height="20" />
+						</span> <span th:if="${Aldto.SCORE_SCORE == 1}"> <img
+							src="/IMG/star_full.png" width="20" height="20" />
+						</span> <span th:if="${Aldto.SCORE_SCORE == 1.5}"> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_half.png" width="20" height="20" />
+						</span> <span th:if="${Aldto.SCORE_SCORE == 2}"> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_full.png" width="20" height="20" />
+						</span> <span th:if="${Aldto.SCORE_SCORE == 2.5}"> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_half.png" width="20" height="20" />
+						</span> <span th:if="${Aldto.SCORE_SCORE == 3}"> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_full.png" width="20" height="20" />
+						</span> <span th:if="${Aldto.SCORE_SCORE == 3.5}"> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_half.png" width="20" height="20" />
+						</span> <span th:if="${Aldto.SCORE_SCORE == 4}"> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_full.png" width="20" height="20" />
+						</span> <span th:if="${Aldto.SCORE_SCORE == 4.5}"> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_half.png" width="20" height="20" />
+						</span> <span th:if="${Aldto.SCORE_SCORE == 5}"> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_full.png" width="20" height="20" />
+						</span>
+					</div>
+
+					<!-- 댓글 내용 -->
+					<div style="color: white;">
+						<div style="margin-top: 4px;">
+							<span th:text="${Aldto.SCORE_CONTENT}">댓글</span>
+						</div>
+					</div>
+					<form th:action="@{/Info/updateRate}" method="post">
+						<input type="text" name="USER_ID" th:value="${Aldto.USER_ID}" />
+    					<input type="hidden" name="ANIME_ID" th:value="${Aldto.ANIME_ID}" />
+    						
+    							
+					<!-- 수정버튼 -->
+					<button type="submit">수정</button>
+					</form>
+					<hr style="margin-top: 20px;" />
+				</div>
+				<!-- 리스트 반복 -->
+				<div th:each="dto : ${list}" style="margin-bottom: 20px;">
+				
+					<!-- 사용자 아이디 -->
+					<div style="color: white;">
+						<strong th:text="${dto.USER_ID}">작성자</strong> :
+					</div>
+
+					<!-- 별점 표시 -->
+					<div style="color: gold; font-size: 20px; margin-top: 4px;">
+						<span th:if="${dto.SCORE_SCORE == 0.5}"> <img
+							src="/IMG/star_half.png" width="20" height="20" />
+						</span> <span th:if="${dto.SCORE_SCORE == 1}"> <img
+							src="/IMG/star_full.png" width="20" height="20" />
+						</span> <span th:if="${dto.SCORE_SCORE == 1.5}"> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_half.png" width="20" height="20" />
+						</span> <span th:if="${dto.SCORE_SCORE == 2}"> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_full.png" width="20" height="20" />
+						</span> <span th:if="${dto.SCORE_SCORE == 2.5}"> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_half.png" width="20" height="20" />
+						</span> <span th:if="${dto.SCORE_SCORE == 3}"> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_full.png" width="20" height="20" />
+						</span> <span th:if="${dto.SCORE_SCORE == 3.5}"> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_half.png" width="20" height="20" />
+						</span> <span th:if="${dto.SCORE_SCORE == 4}"> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_full.png" width="20" height="20" />
+						</span> <span th:if="${dto.SCORE_SCORE == 4.5}"> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_half.png" width="20" height="20" />
+						</span> <span th:if="${dto.SCORE_SCORE == 5}"> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_full.png" width="20" height="20" /> <img
+							src="/IMG/star_full.png" width="20" height="20" />
+						</span>
+					</div>
+
+					<!-- 댓글 내용 -->
+					<div style="color: white;">
+						<div style="margin-top: 4px;">
+							<span th:text="${dto.SCORE_CONTENT}">댓글</span>
+						</div>
+					</div>
+					<form th:action="@{/Info/updateRate}" method="post">
+						<input type="text" name="USER_ID" th:value="${dto.USER_ID}" />
+    					<input type="hidden" name="ANIME_ID" th:value="${dto.ANIME_ID}" />
+    			
+					</form>
+					<hr style="margin-top: 20px;" />
+				</div>
+			</div>
+		</table>
+	
+</body>
+</html>

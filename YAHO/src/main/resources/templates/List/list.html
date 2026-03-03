@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>전체 애니 | YAHO</title>
+<link rel="stylesheet" href="/CSS/AnimeMain.css">
+<link rel="stylesheet" href="/CSS/AnimeList.css">
+<link rel="stylesheet" href="/CSS/info.css">
+<!-- 평점게시판 CSS -->
+<link rel="stylesheet" th:href="@{/CSS/test3.css}">
+<script src="https://kit.fontawesome.com/071aa8f784.js" crossorigin="anonymous"></script>
+
+<!-- 글꼴 -->
+<link
+	href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap"
+	rel="stylesheet">
+</head>
+
+<!-- 기본 favicon -->
+<link rel="icon" href="IMG/favicon/favicon.ico" type="image/x-icon">
+ 
+<script src="/js/navbar.js"></script>
+</head>
+<body>
+	<div th:replace="~{fragments/nav :: navbar}"></div>
+
+	<br>
+	<br>
+
+	<!-- Services Start -->
+	<div class="main-layout">
+		<!-- ✅ 사이드바 -->
+		<aside class="sidebar">
+			<form class="search-box">
+				<input class="search-txt" type="text" name="keyword" id="search-input" placeholder="검색어를 입력하세요">
+				<!-- 
+				<button class="search-btn">
+					<i class="fa-duotone fa-solid fa-magnifying-glass"></i>
+					
+				</button>
+				 -->
+			</form>
+
+			<!-- Tags Start -->
+			<div class="tag-section">
+				<div class="tag-header">
+					<h3 class="tag-title">Tags</h3>
+				</div>
+				
+				<!-- 태그 목록 -->
+				<div class="tag-list" id="main-tag-list" th:fragment="tagListFragment">
+				    <a th:each="entry : ${tagMap}"
+					   href="#"
+					   th:attr="data-tag=${entry.key}"
+					   th:text="${entry.key + ' (' + entry.value + ')'}"
+					   th:class="'tag-btn' + (${selectedTags != null and selectedTags.contains(entry.key)} ? ' selected' : '')">
+					</a>
+				</div>
+
+
+				
+				<div class="tag-header">
+					<h3 class="tag-title">분기별</h3>
+				</div>
+				<div class="tag-list">
+					<a href="@{/List/List_list(tag='2025년1분기')}" class="tag-btn">2025년 1분기</a>
+					<a href="@{/List/List_list(tag='2024년4분기')}" class="tag-btn">2024년 4분기</a>
+					<a href="@{/List/List_list(tag='2024년3분기')}" class="tag-btn">2024년 3분기</a>
+					<a href="@{/List/List_list(tag='2024년2분기')}" class="tag-btn">2024년 2분기</a>
+				</div>
+				
+			</div>
+			<!-- Tags End -->
+
+		</aside>
+		<!-- 사이드바 end -->
+
+		<!-- 오른쪽 콘텐츠 영역 시작-->
+		<div class="content-area">
+			<!-- sort start -->
+			<div class="sort-bar">
+				<div class="sort-dropdown">
+					<button class="sort-toggle">
+						<span class="current-sort">오름차순(A~ㅎ)</span> <span class="arrow">▴</span>
+					</button>
+					<ul class="sort-menu">
+						<li class="selected" data-sort="asc">오름차순(A~ㅎ)</li>
+						<li data-sort="desc">내림차순(ㅎ~A)</li>
+						<li data-sort="rating">인기순</li>
+						<li data-sort="update">업데이트순</li>
+					</ul>
+				</div>
+			</div>
+			<!-- sort end -->
+
+			<!-- ✅ 카드 목록 start -->
+			<!-- card-container는 전체 구조로 유지 -->
+			<div class="card-container" id="anime-list">
+			
+			    <!-- 이 div는 fragment로 쓰이지 않음. 반복 요소만 fragment로 사용 -->
+			    <div class="anime-card" data-wow-delay="0.1s" 
+			         th:each="anime : ${list}" 
+			         th:fragment="animeCardsFragment"
+			         th:data-anime-id="${anime.ANIME_ID}">
+			         
+			        <div class="anime-thumbnail-wrapper">
+			            <img th:src="@{${anime.THUMNAIL_SERO_URL}}" th:alt="${anime.TITLE}" />
+			            <div class="anime-overlay d-flex flex-column">
+			                <a class="anime-zoom-btn" th:href="@{${anime.THUMNAIL_GARO_URL}}" data-lightbox="portfolio">
+			                    <i class="fa-solid fa-plus"></i>
+			                </a>
+			                <div class="mt-auto  title-container">
+			                	
+			                    <h5 th:text="${anime.TITLE}" th:attr="title=${anime.TITLE}"></h5>
+			                    <p>
+			                        평점: <span th:text="${anime.SCORE}"></span> 
+			                        태그: <span th:text="${anime.TAGS}"></span>
+			                    </p>
+			                </div>
+			            </div>
+			        </div>
+			    </div>
+			
+			</div>
+
+			<!-- ✅ 카드 목록 end -->
+			
+			<!-- 로딩 메시지 -->
+			<div id="loading" style="text-align: center; padding: 10px; display: none;">
+				로딩 중...
+			</div>
+			
+			<!-- 결과 메시지 -->
+			<div id="no-result-message" style="text-align: center; padding: 10px; display: none; color: gray;">
+			    검색 결과가 없습니다.
+			</div>
+			<div id="end-message" style="text-align: center; padding: 10px; display: none; color: gray;">
+			    더 이상 불러올 애니가 없습니다.
+			</div>
+
+			
+			<!-- 카드 목록 End -->
+		</div>
+		<!-- 오른쪽 콘텐츠 영역 끝 -->
+	</div>
+	<!-- Services End -->
+	
+	<!-- 모달 -->
+	<div id="animeModal" class="modal">
+		<div class="modal_content">
+			<span class="close" onclick="modal_close()">&times;</span>
+			<div class="modal_div">
+
+				<div class="modal_img">
+					<img id="modal_img" src="" alt="이미지">
+				</div>
+
+				<!-- 애니 상세 정보 -->
+				<div class="anime-info-container">
+					<div class="ani-content">
+						<section class="ani-section">
+							<div class="ani-row">
+								<h2>애니제목</h2>
+								<p id="anime_title"></p>
+							</div>
+							
+							<div class="ani-row">
+								<h2>방영일</h2>
+								<p id="start_date"></p>
+							</div>
+							
+							<div class="ani-row">
+								<h2>방영차수</h2>
+								<p id="total_episode"></p>
+							</div>
+							
+							<div class="ani-row">
+								<h2>제작사</h2>
+								<p id="studio"><a href="#" id="studio_link">제작사1</a></p>
+							</div>
+							
+							<div class="ani-row">
+								<h2>상영등급</h2>
+								<p id="age_rating"></p>
+							</div>
+							
+							<div class="ani-summary">
+								<h2>애니 줄거리</h2>
+								<p id="anime_desc">줄거리 내용</p>
+								<span id="summaryButton" class="toggle-btn">더보기</span>
+							</div>
+						</section>
+					</div>
+				</div>
+
+				<!-- 평점 게시판 -->
+				<div class="wrap">
+				  <div class="rating-container-row">
+				    <div class="rating-box">
+				      <h1>평점 게시판</h1>
+				
+				      <!-- 수정 영역: 유저가 이미 평가한 경우에만 표시 -->
+				      <div id="rateFormArea" style="display: none;">
+				        <div class="USER-profile-button" style = "align:center;" th:attr="style=${#strings.isEmpty(session.USER_PROFILE_IMG) ? 'background-image: url(/IMG/default_profile_img.png)' : 'background-image: url(' + session.USER_PROFILE_IMG + ')'}"></div>
+				        <div class="user-id" th:text="${USER_ID}"></div><input type="hidden" id="rated_user_id" name="USER_ID" th:value="${USER_ID}" />
+				        <input type="hidden" id="rated_anime_id" name="ANIME_ID"/>
+						<br>
+						
+				        <!-- 별점 입력 -->
+				        <div class="rating" id="rated_stars_area"></div>
+				
+				        <!-- 댓글 입력 -->
+
+								<div style="margin-top: 20px;">
+									<textarea id="rated_content" rows="4" cols="50" maxlength="100"></textarea>
+
+									<!-- 버튼을 가로로 정렬 -->
+									<div class="button-container">
+										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+										&nbsp;&nbsp;&nbsp;
+										<button type="button" onclick="updateRate()">수정</button>
+										<button type="button" onclick="deleteRate()">삭제</button>
+										<div id="rated_charCount" class="char-count">0/100</div>
+										<!-- 글자수 카운트는 오른쪽 끝에 위치 -->
+									</div>
+								</div>
+
+
+
+
+							</div>
+				
+				      		<!-- 등록 영역: 평가를 안 했을 때만 표시 -->
+							<div id="registerFormArea" style="display: none;">
+								
+								<input type="hidden" id="register_anime_id" name="ANIME_ID" /> 
+								<br>
+								<div class="USER-profile-button" th:attr="style=${#strings.isEmpty(session.USER_PROFILE_IMG) ? 'background-image: url(/IMG/default_profile_img.png)' : 'background-image: url(' + session.USER_PROFILE_IMG + ')'}"></div>
+								<div class="user-id" th:text="${USER_ID}"></div>
+								<input type="hidden" id="register_user_id" name="USER_ID"th:value="${USER_ID}" /> <br>
+								<div class="rating" id="register_stars_area"></div>
+
+								<div style="margin-top: 20px;">
+									<textarea id="register_content" rows="4" cols="50"
+										maxlength="100"></textarea>
+
+								</div>
+								<div class="button-container">
+									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+									&nbsp;&nbsp;
+									<button type="button" onclick="submitRate()">등록</button>
+									<div id="register_charCount" class="char-count">0/100</div>
+								</div>
+							</div>
+
+						</div>
+				
+				    <!-- 통계 -->
+				    <div class="rating-box2">
+				     <h1>통계</h1>
+				     <br>
+				     <br>
+				     <br>
+				     
+				      <div class="stats-row">
+				        <div class="grade-section">
+				          <span id="grade-number" style="font-size: 50px;"></span><br>
+				          <span class="grade-badge" id="grade-mark"></span>
+				        </div>
+				
+				        <div class="chart-section">
+				          <canvas id="myChart"></canvas>
+				        </div>
+				
+				        <div class="chart-section donut-section">
+				          <canvas id="genderChart"></canvas>
+				        </div>
+				      </div>
+				    </div>
+				  </div>
+				</div>
+				
+				<!-- 댓글 목록 영역 -->
+				<div class="wrap2" id="comment-list-area">
+				  <h1>게시판 목록</h1>
+				  <!-- JS에서 동적으로 삽입 -->
+				</div>
+
+				
+
+			</div>
+		</div>
+	</div>
+	
+<script src="/JS/chart.umd.js"></script>
+	<script src="/JS/Rating3.js"></script>로 HTML에 등록
+	<!-- 도넛 -->
+	<script src="/JS/genderChart.js"></script>
+	<!-- 별점 기능 -->
+	<script src="/JS/Rating.js"></script>
+	<!-- 통계 -->
+
+	<script th:inline="javascript">
+    /*<![CDATA[*/
+        let voteLabels = /*[[${scoreList}]]*/ [];
+        let voteCounts = /*[[${countList}]]*/ [];
+    /*]]>*/
+    </script>
+    <script>
+    const ctx2 = document.getElementById('myChart').getContext('2d');
+
+    // ✅ 전역에 등록
+    window.myChart = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: voteLabels,
+            datasets: [{
+                label: '평점 분포',
+                data: voteCounts,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.6)',   // 0~1
+                    'rgba(54, 162, 235, 0.6)',   // 1~2
+                    'rgba(255, 206, 86, 0.6)',   // 2~3
+                    'rgba(75, 192, 192, 0.6)',   // 3~4
+                    'rgba(153, 102, 255, 0.6)'   // 4~5
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)'
+                ],
+                borderWidth: 1,
+                barPercentage: 0.5,
+                categoryPercentage: 0.5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+<!-- 도넛 함수 -->
+	<script th:inline="javascript">
+/*<![CDATA[*/
+  const maleRatio = /*[[${maleRatio}]]*/ 50;
+  const femaleRatio = /*[[${femaleRatio}]]*/ 50;
+/*]]>*/
+</script>	
+</body>
+<script>
+    // 페이지 새로고침
+	function refreshPage() {
+		window.location.reload();
+	}
+	
+    // 애니메이션 제목 축약
+	document.addEventListener("DOMContentLoaded", function () {
+        const maxLength = 10; // 최대 글자 수 (원하는 값으로 변경)
+
+        document.querySelectorAll(".anime-title").forEach(titleElement => {
+            let fullTitle = titleElement.textContent.trim(); // 원래 제목 가져오기
+            
+            if (fullTitle.length > maxLength) {
+                titleElement.setAttribute("data-title", fullTitle); // data-title에 원제목 저장
+                titleElement.textContent = fullTitle.substring(0, maxLength) + "..."; // 축약 후 표시
+            }
+        });
+    });
+    
+    
+    // 클릭 이벤트
+	document.getElementById('anime-list').addEventListener('click', function (e) {
+	    const card = e.target.closest('.anime-card');
+	    if (!card) return;
+
+	    const animeId = card.getAttribute("data-anime-id");
+	    const userId = document.getElementById("register_user_id")?.value || "";
+	    console.log(animeId, userId);
+
+	    // 아래 모든 fetch 요청들 ↓ 기존처럼 유지
+	    fetch(`/Main/anime/baseInfo?animeId=${animeId}`)
+	        .then(res => res.json())
+	        .then(data => {
+	            const titleEl = document.getElementById("anime_title");
+	            const animeGaroImgEl = document.getElementById("modal_img");
+	            if (titleEl) titleEl.innerText = data.title || "제목 없음";
+	            if (animeGaroImgEl) animeGaroImgEl.setAttribute("src", data.thumnailGaroUrl || "IMG/default.png");
+	        });
+
+	    fetch(`/Main/anime/detailInfo?animeId=${animeId}`)
+	        .then(res => res.json())
+	        .then(data => {
+	            const startDateEl = document.getElementById("start_date");
+	            const totalEpEl = document.getElementById("total_episode");
+	            const studioEl = document.getElementById("studio");
+	            const studioLinkEl = document.getElementById("studio_link");
+	            const ratingEl = document.getElementById("age_rating");
+	            const descEl = document.getElementById("anime_desc");
+
+	            if (startDateEl) startDateEl.innerText = data.startDate.substring(0, 10) || "정보가 없습니다.";
+	            if (totalEpEl) totalEpEl.innerText = data.totalEpisode || "정보가 없습니다.";
+	            if (studioLinkEl) {
+	                studioLinkEl.setAttribute("href", data.studioLink);
+	                studioLinkEl.setAttribute("target", "_blank");
+	                studioLinkEl.innerText = data.studio || "제작사 정보 없음";
+	            }
+	            if (ratingEl) ratingEl.innerText = data.ageRating || "미정";
+	            if (descEl) descEl.innerHTML = (data.animeDesc || "설명이 없습니다.").replace(/\n/g, "<br>");
+	        });
+
+	    fetch("/Schedule/rateInfoJson", {
+	        method: "POST",
+	        headers: { "Content-Type": "application/json" },
+	        body: JSON.stringify({ ANIME_ID: animeId }) 
+	    })
+	    .then(res => res.json())
+	    .then(data => {
+	        document.getElementById("grade-number").textContent = data.grade;
+	        document.getElementById("grade-mark").textContent = data.gradeMark;
+	        updateBarChart(data.scoreList, data.countList);
+	        updateDonutChart(data.maleRatio, data.femaleRatio);
+	        updateCommentList(data.list);
+	        applyUserRatingForm(data.Aldto, animeId, userId);
+	        console.log("애니별 내용 확인", data.Aldto);
+	        document.getElementById("animeModal").style.display = "block";
+	        document.querySelector(".modal_content").scrollTop = 0;
+	    });
+	});
+
+
+  
+ 	// 모달 닫기 함수
+    function modal_close() {
+        document.getElementById("animeModal").style.display = "none";
+        
+     // 줄거리 더보기 초기화
+	    const summaryText = document.querySelector('.ani-summary p');
+	    const summaryButton = document.getElementById('summaryButton');
+	    if (summaryText.classList.contains('expanded')) {
+	        summaryText.classList.remove('expanded');
+	        summaryButton.textContent = '더보기';
+	    }
+    }
+
+    // 모달 바깥 영역 클릭 시 닫기 기능 추가
+    window.onclick = function(event) {
+        let modal = document.getElementById("animeModal");
+        if (event.target === modal) {  // 모달 바깥 클릭 시
+            modal_close();  // 모달 닫기 실행
+        }
+    };
+</script>
+<script>
+
+function applyUserRatingForm(dto, animeId, userId) {
+    // 수정 폼과 등록 폼을 찾기
+    const rateFormArea = document.getElementById("rateFormArea");
+    const registerFormArea = document.getElementById("registerFormArea");
+    
+    // 수정 폼 내용 초기화
+    const ratedContent = document.getElementById("rated_content");
+    const ratedStarsArea = document.getElementById("rated_stars_area");
+
+    // 새로운 애니메이션의 수정 폼을 불러올 때마다 폼을 초기화
+    if (rateFormArea && registerFormArea) {
+        // 폼 초기화
+        ratedContent.value = "";  // 댓글 내용 초기화
+        ratedStarsArea.innerHTML = "";  // 별점 초기화
+    }
+
+    // 수정 폼이 있을 경우, 해당 애니메이션의 정보를 불러옴
+    if (dto) {
+        rateFormArea.style.display = "block";
+        registerFormArea.style.display = "none";
+        document.getElementById("rated_user_id").value = dto.USER_ID || userId;
+        document.getElementById("rated_anime_id").value = dto.ANIME_ID || animeId;
+        document.getElementById("rated_content").value = dto.SCORE_CONTENT; // 기존 내용 표시
+        applyStars("rated_stars_area", dto.SCORE_SCORE, "SCORE_SCORE");
+    } else {
+        // 등록 폼 표시
+        rateFormArea.style.display = "none";
+        registerFormArea.style.display = "block";
+        document.getElementById("register_anime_id").value = animeId;
+        document.getElementById("register_user_id").value = userId;
+        document.getElementById("register_content").value = ""; // 초기화
+        applyStars("register_stars_area", 3.5, "SCORE_SCORE"); // 기본 별점
+    }
+}
+
+function applyStars(containerId, selectedValue, inputName) {
+    const area = document.getElementById(containerId);
+    area.innerHTML = "";
+    const scores = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
+    scores.forEach(score => {
+        const id = `${inputName}_${score}`;
+        const checked = score === selectedValue ? "checked" : "";
+        const type = (score * 10) % 10 === 5 ? "half" : "full";
+        area.innerHTML += `
+            <label class="rating__label rating__label--${type}" for="${id}">
+                <input type="radio" id="${id}" class="rating__input" name="${inputName}" value="${score}" ${checked}/>
+                <span class="star-icon"></span>
+            </label>`;
+    });
+}
+//평점게시판
+function updateCommentList(list) {
+    const area = document.getElementById("comment-list-area");
+    area.innerHTML = "<h1 style='color: white; text-align: center; margin-bottom: 30px;'>게시판 목록</h1>";
+    
+    list.forEach(dto => {
+        const div = document.createElement("div");
+        div.className = "comment-card";
+        div.innerHTML = `
+        	<div class="comment-left">
+            <img src="/IMG/kibon_image.jpg" class="profile-img"/>
+            	<div class="user-id">${dto.USER_NICKNAME}</div>
+            <div class="comment-stars">
+                ${generateStarsHTML(dto.SCORE_SCORE)}
+            </div>
+        </div>
+        <div class="comment-right">
+            <div class="comment-content-box">
+                <div class="comment-content">
+                    ${dto.SCORE_CONTENT}
+                </div>
+            </div>
+            <div class="comment-meta">
+                ${dto.SCORE_REGDATE.substring(0,10) || '작성일자 없음'}
+            </div>
+        </div>
+        `;
+        area.appendChild(div);
+    });
+}
+
+function generateStarsHTML(score) {
+    const full = Math.floor(score);
+    const half = score % 1 >= 0.5 ? 1 : 0;
+    let html = "";
+    for (let i = 0; i < full; i++) html += `<img src="/IMG/star_full.png" width="20" height="20"/>`;
+    if (half) html += `<img src="/IMG/star_half.png" width="20" height="20"/>`;
+    return html;
+}
+
+function updateDonutChart(maleRatio, femaleRatio) {	
+    const canvas = document.getElementById('genderChart');
+    if (!canvas) {
+        console.warn("genderChart 캔버스를 찾을 수 없습니다.");
+        return;
+    }
+
+    const ctx = canvas.getContext('2d');
+    const data = [maleRatio, femaleRatio];
+
+    // 이미 해당 canvas에 등록된 차트가 있으면 Chart.js 내부 등록도 제거
+    const existingChart = Chart.getChart(canvas); // Chart.js v3+
+    if (existingChart) {
+        existingChart.destroy(); // ✅ 안전하게 제거
+    }
+
+    window.genderChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['남성', '여성'],
+            datasets: [{
+                data: data,
+                backgroundColor: ['#36A2EB', '#FF6384']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+}
+
+</script>
+<script>
+//모달 내부 줄거리 확장 버튼
+  const summaryText = document.querySelector('.ani-summary p');
+  const summaryButton = document.getElementById('summaryButton');
+
+  summaryButton.addEventListener('click', () => {
+    summaryText.classList.toggle('expanded');
+    if (summaryText.classList.contains('expanded')) {
+      summaryButton.textContent = '접기';
+    } else {
+      summaryButton.textContent = '더보기';
+    }
+  });
+</script>
+<!-- 글자수 확인 함수 -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+	  const maxChars = 100;
+
+	  // register 폼
+	  const regTA    = document.getElementById('register_content');
+	  const regCount = document.getElementById('register_charCount');
+	  // 수정 폼
+	  const ratTA    = document.getElementById('rated_content');
+	  const ratCount = document.getElementById('rated_charCount');
+		
+	  currentPage = 2;
+	  
+	  function attachCounter(textarea, counter) {
+	    if (!textarea || !counter) return;
+	    // 초기 세팅
+	    counter.textContent = `0/${maxChars}`;
+	    textarea.addEventListener('input', () => {
+	      // 초과 자동 커트 (maxlength 써도 혹시 몰라서)
+	      if (textarea.value.length > maxChars) {
+	        textarea.value = textarea.value.substring(0, maxChars);
+	      }
+	      // 실시간 업데이트
+	      counter.textContent = `${textarea.value.length}/${maxChars}`;
+	    });
+	  }
+
+	  attachCounter(regTA, regCount);
+	  attachCounter(ratTA, ratCount);
+	});
+</script>
+<script>
+  const dropdown = document.querySelector('.sort-dropdown');
+  const toggleBtn = dropdown.querySelector('.sort-toggle');
+  const sortMenu = dropdown.querySelector('.sort-menu');
+  const sortItems = sortMenu.querySelectorAll('li');
+  const currentSortText = dropdown.querySelector('.current-sort');
+
+  // 드롭다운 열기/닫기
+  toggleBtn.addEventListener('click', () => {
+    dropdown.classList.toggle('open');
+  });
+
+  // 항목 클릭 시
+  sortItems.forEach(item => {
+    item.addEventListener('click', () => {
+      // 기존 선택 해제
+      sortItems.forEach(i => i.classList.remove('selected'));
+      item.classList.add('selected');
+
+      // 텍스트 표시 변경
+      currentSortText.textContent = item.textContent;
+
+      // 드롭다운 닫기
+      dropdown.classList.remove('open');
+    });
+  });
+
+  // 외부 클릭 시 닫기
+  document.addEventListener('click', (e) => {
+    if (!dropdown.contains(e.target)) {
+      dropdown.classList.remove('open');
+    }
+  });
+</script>
+
+<script>
+let currentPage = 1;
+let loading = false;
+let keyword = '';
+let selectedTags = [];
+let hasMore = true;
+let sortOption = 'asc'; // 기본 정렬 기준
+
+// 태그 필터
+document.querySelectorAll('.tag-btn').forEach(btn => {
+	btn.addEventListener('click', function () {
+		event.preventDefault();
+		const tag = this.getAttribute('data-tag');
+		console.log("클릭된 태그:", tag);
+
+		// 토글 선택
+		if (selectedTags.includes(tag)) {
+			selectedTags = selectedTags.filter(t => t !== tag);
+			this.classList.remove('selected');
+		} else {
+			selectedTags.push(tag);
+			this.classList.add('selected');
+		}
+
+		// 초기화 후 필터 적용
+		currentPage = 1;
+		hasMore = true;
+		document.getElementById('anime-list').innerHTML = '';
+		document.getElementById('end-message').style.display = 'none';
+		document.getElementById('no-result-message').style.display = 'none';
+
+		console.log("선택된 태그 목록:", selectedTags);
+
+		loadMoreAnime();
+	});
+});
+
+const searchInput = document.getElementById('search-input');
+let composing = false;
+let enterQueued = false;
+
+// 한글 조합 시작
+searchInput.addEventListener('compositionstart', () => {
+	composing = true;
+});
+
+// 조합 끝났을 때
+searchInput.addEventListener('compositionend', (e) => {
+	composing = false;
+	keyword = e.target.value.trim();
+
+	if (enterQueued) {
+		enterQueued = false;
+		triggerSearch();
+	}
+});
+
+// 영어 및 일반 입력
+searchInput.addEventListener('input', function () {
+	if (composing) return; // 한글 조합 중이면 무시
+	keyword = this.value.trim();
+	triggerSearch();
+});
+
+// 엔터 눌렀을 때
+searchInput.addEventListener('keydown', (e) => {
+	if (e.key === 'Enter') {
+		if (composing) {
+			// 조합 중이면 기다렸다가 실행
+			enterQueued = true;
+		} else {
+			// 조합 상태 아니면 바로 실행
+			keyword = searchInput.value.trim();
+			triggerSearch();
+		}
+		e.preventDefault(); // 폼 제출 방지
+	}
+});
+
+// 실제 검색 함수
+function triggerSearch() {
+	currentPage = 1;
+	hasMore = true;
+	document.getElementById('anime-list').innerHTML = '';
+	document.getElementById('end-message').style.display = 'none';
+	document.getElementById('no-result-message').style.display = 'none';
+	loadMoreAnime();
+}
+
+
+
+// 정렬 기준
+sortItems.forEach(item => {
+	item.addEventListener('click', () => {
+		const sortValue = item.getAttribute('data-sort');
+		if (sortValue !== sortOption) {
+			sortOption = sortValue;
+			currentPage = 1;
+			hasMore = true;
+			document.getElementById('anime-list').innerHTML = '';
+			document.getElementById('end-message').style.display = 'none';
+			document.getElementById('no-result-message').style.display = 'none';
+			loadMoreAnime();
+		}
+	});
+});
+
+// 스크롤 이벤트
+window.addEventListener('scroll', () => {
+	if (!hasMore) return; // 더 불러올 게 없으면 중단
+	if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 200) {
+		loadMoreAnime();
+	}
+});
+
+// 로딩 기능
+function loadMoreAnime() {
+	if (loading || !hasMore) return;
+	loading = true;
+
+	let url = `/List/animeList?page=${currentPage}`;
+	if (keyword) url += `&keyword=${encodeURIComponent(keyword)}`;
+	selectedTags.forEach(tag => {
+		url += `&tag=${encodeURIComponent(tag)}`;
+	});
+	if (sortOption) url += `&sort=${encodeURIComponent(sortOption)}`; 
+	
+	console.log("✅ keyword:", keyword); // 디버깅 로그
+	
+	fetch(url)
+	.then(response => response.text())
+	.then(data => {
+		if (data.trim() === '') {
+			if (currentPage === 1) {
+				document.getElementById('no-result-message').style.display = 'block';
+			} else {
+				document.getElementById('end-message').style.display = 'block';
+			}
+			hasMore = false;
+			loading = false;
+			return;
+		}
+
+		document.getElementById('anime-list').insertAdjacentHTML('beforeend', data);
+		currentPage++;
+		loading = false;
+		
+		loadTagList();
+	});
+}
+
+// 태그 목록 다시 로드
+function loadTagList() {
+	let tagUrl = `/List/tagListFragment`;
+	if (keyword) tagUrl += `?keyword=${encodeURIComponent(keyword)}`;
+	if (selectedTags.length > 0) {
+		selectedTags.forEach((tag, index) => {
+			tagUrl += `${index === 0 && !keyword ? '?' : '&'}tag=${encodeURIComponent(tag)}`;
+		});
+	}
+
+	fetch(tagUrl)
+		.then(response => response.text())
+		.then(html => {
+			document.getElementById('main-tag-list').outerHTML = html;
+			attachTagEvents(); // ✅ 새로 바뀐 태그에 이벤트 다시 등록
+		});
+}
+
+function attachTagEvents() {
+	document.querySelectorAll('.tag-btn').forEach(btn => {
+		btn.addEventListener('click', function (event) {
+			event.preventDefault();
+			const tag = this.getAttribute('data-tag');
+			if (!tag) return;
+
+			if (selectedTags.includes(tag)) {
+				selectedTags = selectedTags.filter(t => t !== tag);
+				this.classList.remove('selected');
+			} else {
+				selectedTags.push(tag);
+				this.classList.add('selected');
+			}
+
+			currentPage = 1;
+			hasMore = true;
+			document.getElementById('anime-list').innerHTML = '';
+			loadMoreAnime();
+		});
+	});
+}
+
+
+
+
+</script>

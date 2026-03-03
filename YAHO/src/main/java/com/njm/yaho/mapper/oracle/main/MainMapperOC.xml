@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.njm.yaho.mapper.oracle.main.MainMapperOC">
+	<select id="getAnimeDetailInfo" resultType="com.njm.yaho.domain.oracle.main.MainOCDTO">
+		SELECT 
+			ANIME_ID AS animeId,
+			ANIME_DESC AS animeDesc,
+			START_DATE AS startDate,
+			TOTAL_EPISODE AS totalEpisode,
+			CURRENT_EPISODE AS currentEpisode,
+			STUDIO AS studio,
+			STUDIO_LINK AS studioLink,
+			ANIME_SCORE AS animeScore,
+			AGE_RATING AS ageRating,
+			CREATED_AT AS createdAt
+		FROM TBL_ANIME WHERE ANIME_ID = #{animeId}
+	</select>
+</mapper>

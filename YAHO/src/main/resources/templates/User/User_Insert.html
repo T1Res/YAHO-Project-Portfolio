@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>회원가입 | YAHO</title>
+<link href="/CSS/User.css" rel="stylesheet">
+<script type="text/javascript"
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<!-- favicon -->
+<link rel="icon" href="/IMG/favicon/favicon.ico" type="image/x-icon">
+</head>
+<script>
+$(function() {
+  // 아이디 중복 검사
+  $("#userid").on("change", function() {
+    const userid = $(this).val().trim();
+    if (!userid) return;
+
+    $.ajax({
+      url: '/User/User_IdCheck',
+      type: 'post',
+      data: { 'USER_ID': userid },
+      success: function(result) {
+        if (result === 0) {
+          $("#userid_c").html('<span style="color: green;">사용 가능한 아이디입니다.</span>');
+        } else {
+          $("#userid_c").html('<span style="color: red;">이미 존재하는 아이디입니다.</span>');
+          $("#userid").val('').focus();
+        }
+      },
+      error: function() {
+        alert("아이디 중복 체크 중 오류 발생");
+      }
+    });
+  });
+
+  // 비밀번호 확인
+  $("input[name='repasswd']").on("change", function() {
+    const passwd = $('#passwd').val();
+    const repasswd = $('#repasswd').val();
+    if (passwd !== repasswd) {
+      $("#repasswd_c").html("비밀번호를 다시 입력");
+      $('#repasswd').val('').focus();
+    } else {
+      $("#repasswd_c").html("확인됨");
+    }
+  });
+
+  // 이메일 중복 검사
+  $("#useremail1, #useremail2").on("keyup blur change", function() {
+    const email1 = $("#useremail1").val().trim();
+    const email2 = $("#useremail2").val().trim();
+    const fullEmail = email1 + "@" + email2;
+
+    if (email1 === "" || email2 === "") {
+      $("#useremail_c").html('<span style="color: red;">이메일을 입력해주세요.</span>');
+      $("#useremail_c").data("valid", false);
+      return;
+    }
+
+  });
+
+});
+
+// 최종 제출 유효성 검사
+function send() {
+  const nickname = user.USER_NICKNAME.value.trim();
+  const userId = user.USER_ID.value.trim();
+  const password = user.USER_PASSWORD.value.trim();
+  const repasswd = user.repasswd.value.trim();
+  const gender = $("input[name='USER_GENDER']:checked").val();
+  
+
+  if (nickname === "") {
+    alert("이름을 입력하세요.");
+    user.USER_NICKNAME.focus();
+    return;
+  }
+  if (userId === "") {
+    alert("아이디를 입력하세요.");
+    user.USER_ID.focus();
+    return;
+  }
+  if (password.length < 6 || password.length > 12) {
+    alert("비밀번호는 6~12자 사이로 입력하세요.");
+    user.USER_PASSWORD.focus();
+    return;
+  }
+  if (password !== repasswd) {
+    alert("비밀번호 확인이 일치하지 않습니다.");
+    user.repasswd.focus();
+    return;
+  }
+  if (!gender) {
+    alert("성별을 선택해주세요.");
+    return;
+  }
+  
+
+  user.action = "/User/User_Insert";
+  user.submit();
+}
+</script>
+<body>
+	<div class="user-insert-container">
+		<form name="user" method="post" enctype="multipart/form-data" action="/User/User_Insert">
+			<div class="user-insert-title">
+				<h2>회원가입</h2>
+				<h3>
+					(<font color=red>&nbsp;*&nbsp;</font>표시항목은 반드시 입력해주세요.)
+				</h3>
+			</div>
+			
+			<div class="user-insert-cont">
+				<div class="user-insert-input">
+					<b>프로필 사진</b>
+					<input type=file name=profile size=63 value="">
+				</div>
+				<div class="user-insert-input">
+					<b>이름<font color=red>&nbsp;*</font></b>
+					<input type=text name="USER_NICKNAME" size=16 maxlength=20 value="" placeholder="이름을 입력">
+				</div>
+				<div class="user-insert-input">
+					<b>ID<font color=red>&nbsp;*</font></b>
+					<input type=text name="USER_ID" id=userid size=12 maxlength=16 style="width: 120">
+					<span id="userid_c" color="red">[아이디 중복 검사 결과]</span>
+				</div>
+				<div class="user-insert-input">
+					<b>비밀번호<font color=red>&nbsp;*</font></b>
+					<input type=password name="USER_PASSWORD" id=passwd size=8 maxlength=12 style="width: 80">
+					<span>[6~12자 이내의 영문이나 숫자만 가능합니다.]</span>
+				</div>
+				<div class="user-insert-input">
+					<b>비밀번호확인<font color=red>&nbsp;*</font></b>
+					<input type=password name=repasswd id=repasswd size=8 maxlength=12 value="" style="width: 80">
+					<font id="repasswd_c" color="red">비밀번호 확인을 위해서 비밀번호를 한번 더 입력해주세요.</font>
+				</div>
+				<div class="user-insert-input">
+					<b>성별<font color=red>&nbsp;*</font></b>
+					<input type="radio"	name="USER_GENDER" value="1" checked> 남자</label>
+					<input type="radio" name="USER_GENDER" value="2"> 여자</label>
+				</div>
+				<div class="user-insert-input">
+					<b>이메일 (변경 불가)</b>
+					<input type="text" name="USER_EMAIL" id="USER_EMAIL" readonly th:value="${USER_EMAIL}">	
+				</div>
+				<div class="user-insert-input">
+					<b>한줄소개</b>
+					<input type=text name="USER_BIO" size=60 value="" class="">
+				</div>
+			</div>
+			
+			<div class="user-insert-button">
+				<a href="javascript:send()" class="insertbutton">가입</a>
+				<a href="javascript:history.back()" class="insertbutton">취소</a>
+			</div>
+		</form>
+	</div>
+</body>
+</html>

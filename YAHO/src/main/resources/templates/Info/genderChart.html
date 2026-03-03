@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>성별 통계</title>
+  
+  <style>
+    body {
+      background-color: #1e1e1e;
+      color: white;
+      font-family: 'Gowun Dodum', sans-serif;
+    }
+  </style>
+</head>
+<body>
+
+<div th:fragment="chartFragment">
+<!-- 성별 도넛 -->
+	<div style="width: 100%; max-width: 250px; margin: 40px auto;">
+  		<canvas id="genderChart" ></canvas>
+	</div>
+</div>
+<script th:inline="javascript">
+/*<![CDATA[*/
+  const maleRatio = /*[[${maleRatio}]]*/ 50;
+  const femaleRatio = /*[[${femaleRatio}]]*/ 50;
+/*]]>*/
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    drawGenderChart(maleRatio, femaleRatio);
+  });
+</script>
+
+  <script src="/JS/genderChart.js"></script>
+</body>
+</html>

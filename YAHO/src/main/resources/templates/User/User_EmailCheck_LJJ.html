@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>이메일 중복확인 - YAHO</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
+<body>
+  <h2>이메일 입력</h2>
+  <form id="emailForm" method="post" action="/User/User_InsertForm">
+    <label>이메일:
+      <input type="text" name="USER_EMAIL1" id="email1" size=13 maxlength="15">
+	   @
+	  <input type="text" name="USER_EMAIL2" id="email2" size=13 maxlength="15">
+			<select name="USER_EMAIL3" id=email3 onChange="emailcheck()">
+				<option value="0">직접입력</option>
+				<option value="naver.com">naver.com</option>
+				<option value="daum.net">daum.net</option>
+				<option value="nate.com">nate.com</option>
+				<option value="gmail.com">gmail.com</option>
+			</select>
+    </label>
+    <span id="email_msg"></span><br><br>
+    <button type="button" onclick="checkEmail()">중복확인</button>
+  </form>
+
+  <script>
+ 	 // 이메일 도메인 선택 시 처리
+ 	 $("#email3").on("change", function() {
+    	const selected = $(this).val();
+    	if (selected !== "0") {
+     	$("#email2").val(selected).prop("readonly", true);
+   		} else {
+     	$("#email2").val("").prop("readonly", false).focus();
+   		}
+ 	 });
+    function checkEmail() {
+      const email1 = $("#email1").val().trim();
+      const email2 = $("#email2").val().trim();
+      
+      if (!email1 || !email2) {
+        $("#email_msg").html("<span style='color: red;'>이메일을 모두 입력해주세요.</span>");
+        return;
+        }
+        const fullEmail = email1 + "@" + email2;
+        
+      $.ajax({
+        url: "/User/User_EmailCheck",
+        type: "post",
+        data: { USER_EMAIL: fullEmail },
+        success: function(result) {
+          if (result === 0) {
+            $("#email_msg").html("<span style='color: green;'>사용 가능한 이메일입니다. 가입 페이지로 이동합니다.</span>");
+            // 0.5초 후 가입 폼으로 이동 (이메일 파라미터 전달)
+            setTimeout(() => {
+              window.location.href = "/User/User_InsertForm?USER_EMAIL=" + encodeURIComponent(fullEmail);
+            }, 800);
+          } else {
+            $("#email_msg").html("<span style='color: red;'>이미 사용 중인 이메일입니다.</span>");
+          }
+        },
+        error: function() {
+          alert("이메일 중복 검사 중 오류 발생");
+        }
+      });
+    }
+  </script>
+</body>
+</html>

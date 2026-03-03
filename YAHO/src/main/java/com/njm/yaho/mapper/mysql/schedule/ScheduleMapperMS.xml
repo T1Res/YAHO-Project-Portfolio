@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.njm.yaho.mapper.mysql.schedule.ScheduleMapperMS">
+	<select id="WeekdayAnimeList" resultType="com.njm.yaho.domain.mysql.schedule.ScheduleMSDTO">
+    	SELECT *
+    		FROM TBL_ANIME
+    		WHERE WEEKDAY IS NOT NULL
+    		ORDER BY TITLE
+	</select>
+</mapper>

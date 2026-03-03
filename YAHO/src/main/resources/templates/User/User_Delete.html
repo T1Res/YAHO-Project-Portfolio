@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>회원탈퇴 | YAHO</title>
+</head>
+<body>
+	<h2>정말로 탈퇴하시겠습니까?</h2>
+	<form method="post" action="/User/User_Delete">
+  		<input type="password" name="password" placeholder="비밀번호 입력">
+  		<button type="submit" class="">탈퇴하기</button>
+	</form>
+	
+	<p th:if="${msg}" th:text="${msg}" style="color: red;"></p>
+</body>
+</html>

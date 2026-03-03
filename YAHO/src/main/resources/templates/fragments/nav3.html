@@ -1,0 +1,43 @@
+<!-- templates/fragments/nav.html -->
+<style>
+*{margin:0; padding:0;}
+ul{list-style:none;}
+a{text-decoration:none; color:#333;}
+.menu:after{display:block; content:''; clear:both;}
+.menu > li{position:relative; float:left; margin-right:5px;}
+.menu > li > a{display:block; padding:0 15px; background:#333; height:40px; line-height:40px; color:#fff;}
+.menu > li:hover .depth_1 {display:block;}
+.menu .depth_1{display:none; position:absolute; left:0; right:0; text-align:center;}
+.menu .depth_1 a{display:block; padding:5px; background:#666; color:#fff;}
+</style>
+<div class="nav" th:fragment="navbar">
+    <img src="/IMG/logo_test1.png">
+    <div class="navitem" onclick="location.href='/Main'">홈</div>
+    <div class="navitem" onclick="location.href='/List'">전체 애니</div>
+    <div class="navitem" onclick="location.href='/Schedule/animeSchedule'">방영중 애니</div>
+
+    <div th:if="${USER_PERMISSION == 2}">
+        <div class="navitem" onclick="location.href='/Admin/insert'">관리자</div>
+    </div>
+
+    <div style="display: flex; margin-left: auto;">
+        <div class="navitem" th:if="${session.USER_ID == null}">
+            <a th:href="@{/User/User_Login}">로그인</a>
+        </div>
+        <div class="navitem" th:if="${session.USER_ID == null}">
+            <a th:href="@{/User/User_EmailCheck}">회원가입</a>
+        </div>
+       
+
+		<ul class="menu">
+			<li><a href="#">MENU 1</a>
+				<ul class="depth_1">
+					<li><div class="dropdown-item" onclick="location.href='/User/User_Profile'">프로필</div></li>
+					<li><div class="dropdown-item" onclick="location.href='/User/User_Modify'">정보수정</div></li>
+					<li><div class="dropdown-item" onclick="location.href='/User/User_Logout'">로그아웃</div></li>
+				</ul>
+			</li>
+		</ul>
+	</div>
+</div>
+

@@ -1,0 +1,614 @@
+@charset "UTF-8";
+
+@font-face {
+	font-family: 'GmarketSansMedium';
+	src:
+		url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff')
+		format('woff');
+	font-weight: normal;
+	font-style: normal;
+}
+
+body {
+	background: linear-gradient(90deg, rgb(255, 0, 0) 0%, rgb(0, 0, 0) 50%);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+	font-family: 'GmarketSansMedium', sans-serif;
+}
+
+/* 회원 가입-이메일 인증 */
+.hidden {
+	display: none;
+}
+
+.readonly {
+	background-color: #eee;
+}
+
+.timer {
+	color: red;
+	font-weight: bold;
+	margin: 10px;
+	font-size: 20px;
+}
+
+.email-container {
+	width: 100%;
+	max-width: 360px;
+	margin: 40px auto;
+	border: 1px solid #ddd;
+	border-radius: 15px;
+	background-color: #f9f9f9;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+	padding: 30px;
+}
+
+.email-container h2 {
+	text-align: center;
+}
+
+.email-container h4 {
+	text-align: left;
+	margin: 5px;
+}
+
+.email-container input {
+	outline: 0;
+	background: #f2f2f2;
+	width: 100%; /* 크기를 100%로 설정하여 부모 컨테이너에 맞게 조정 */
+	border: 0;
+	margin: 0 0 10px;
+	padding: 15px;
+	height: 40px; /* 높이 일치 */
+	box-sizing: border-box;
+	font-size: 14px;
+	border-radius: 15px;
+}
+
+.email-container input::placeholder {
+	color: #aaa; /* placeholder 색상 */
+	font-size: 14px; /* placeholder 크기 통일 */
+}
+
+.emailbutton {
+	width: 100%; /* 버튼의 너비를 부모 div의 너비에 맞게 설정 */
+	height: 40px;
+	padding: 0; /* padding을 0으로 설정하여 텍스트가 버튼 안에서 정확히 중앙에 위치하도록 함 */
+	font-size: 16px;
+	border-radius: 15px;
+	font-family: 'GmarketSansMedium', sans-serif;
+	cursor: pointer;
+	/* 버튼 내 텍스트 중앙 정렬을 위해 flexbox 사용 */
+	display: flex;
+	align-items: center; /* 수직 중앙 정렬 */
+	justify-content: center; /* 수평 중앙 정렬 */
+	text-align: center; /* 텍스트가 왼쪽이나 오른쪽으로 치우치지 않게 함 */
+	color: #fff;
+	background-color: #000; /* 버튼 배경색 */
+	margin-bottom: 0px;
+}
+
+.emailbutton:hover {
+	color: #000;
+	background-color: #D9D9D9;
+	text-decoration: none;
+}
+
+/* 회원가입 */
+.user-insert-container {
+	width: 100%;
+	max-width: 1000px;
+	border: 1px solid #ddd;
+	border-radius: 15px;
+	background-color: #f9f9f9;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+	padding: 30px;
+}
+
+.user-insert-title {
+	margin-bottom: 30px;
+}
+
+.user-insert-title h2 {
+	text-align: center;
+	font-size: 36px;
+	margin-bottom: 0px;
+	font-weight: bold;
+	color: #000;
+}
+
+.user-insert-title h3 {
+	text-align: center;
+	font-size: 18px;
+	margin-top: 0px; /* 위쪽 마진도 없애주면 더 밀착됨 */
+	color: #000;
+}
+
+.user-insert-cont {
+	margin-left: 100px;
+	margin-bottom: 20px;
+}
+
+.user-insert-input {
+	margin-bottom: 10px;
+}
+
+.user-insert-input b {
+	display: inline-block;
+	width: 150px; /* b 태그와 input 사이의 간격을 일정하게 유지 */
+	margin-right: 10px; /* b 태그와 input 간의 간격 */
+	font-weight: bold;
+}
+
+.user-insert-input input[type="text"], .user-insert-input input[type="password"],
+	.user-insert-input input[type="file"] {
+	width: 300px; /* input의 가로 크기 설정 */
+	padding: 5px; /* 내부 여백 설정 */
+	border: 1px solid #000; /* 테두리 설정 */
+	background-color: white; /* 배경색 흰색 */
+	box-sizing: border-box; /* padding과 border가 전체 크기에 포함되도록 설정 */
+}
+
+.user-insert-input input[type="radio"] {
+	margin-right: 10px; /* 라디오 버튼 간 간격 설정 */
+}
+
+.user-insert-input p {
+	margin: 5px 0;
+}
+
+.user-insert-input input[name="USER_BIO"] {
+	width: 70%; /* user_bio 부분의 input 크기 변경 */
+	height: 40px;
+	padding: 10px;
+}
+
+#userid_c, #repasswd_c {
+	font-size: 12px;
+	color: red;
+}
+
+.user-insert-button {
+	display: flex; /* 버튼을 가로로 배치 */
+	gap: 10px; /* 버튼 사이에 간격을 추가 */
+	justify-content: center; /* 버튼들이 중앙에 위치하도록 설정 */
+}
+
+.insertbutton {
+	width: 150px; /* 버튼의 가로 크기 설정 */
+	height: 40px;
+	padding: 0;
+	font-size: 16px;
+	border-radius: 15px;
+	font-family: 'GmarketSansMedium', sans-serif;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	color: #fff;
+	background-color: #000;
+	text-decoration: none;
+}
+
+.insertbutton:hover {
+	color: #000;
+	background-color: #D9D9D9;
+}
+
+/* 로그인 */
+.login-box form {
+	position: relative;
+	background: #FFFFFF;
+	max-width: 360px;
+	padding: 30px;
+	text-align: center;
+	box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0
+		rgba(0, 0, 0, 0.24);
+	border-radius: 15px;
+}
+
+.login-box input {
+	outline: 0;
+	background: #f2f2f2;
+	width: 100%; /* 크기를 100%로 설정하여 부모 컨테이너에 맞게 조정 */
+	border: 0;
+	margin: 0 0 10px;
+	padding: 15px;
+	height: 40px; /* 높이 일치 */
+	box-sizing: border-box;
+	font-size: 14px;
+	border-radius: 15px;
+}
+
+.login-box input::placeholder {
+	color: #aaa; /* placeholder 색상 */
+	font-size: 14px; /* placeholder 크기 통일 */
+}
+
+/* 로그인 버튼*/
+.login-submit-btn {
+	width: 100%;
+	height: 40px;
+	padding: 0; /* padding을 0으로 설정하여 텍스트가 버튼 안에서 정확히 중앙에 위치하도록 함 */
+	font-size: 16px;
+	border-radius: 15px;
+	font-family: 'GmarketSansMedium', sans-serif;
+	cursor: pointer;
+	/* 버튼 안의 텍스트를 중앙에 배치 */
+	display: flex;
+	align-items: center; /* 수직 중앙 정렬 */
+	justify-content: center; /* 수평 중앙 정렬 */
+	text-align: center; /* 텍스트가 왼쪽이나 오른쪽으로 치우치지 않게 함 */
+	color: #fff;
+	background-color: #000;
+}
+
+.login-submit-btn:hover {
+	color: #000;
+	background-color: #D9D9D9;
+	text-decoration: none;
+}
+
+/* 아이디/비밀번호 찾기 링크 */
+.account-recovery-links {
+	margin-top: 0px;
+}
+
+.account-recovery-links a {
+	color: black;
+	text-decoration: none;
+	margin-right: 20px;
+	align-items: center;
+}
+
+.account-recovery-links a:hover {
+	color: red;
+	text-decoration: underline;
+}
+
+#modalOverlay {
+	display: none; /* 기본은 숨김 */
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.5); /* 반투명 검정 배경 */
+	z-index: 999; /* 모달 아래쪽에 위치하도록, 모달보다 낮게 조절 필요 */
+}
+
+.modal {
+	background: #fff;
+	border: 1px solid #ccc;
+	border-radius: 15px;
+	padding: 30px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+	width: 300px;
+	display: none;
+	position: fixed;
+	top: 30%;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 1000;
+}
+
+.findname {
+	font-size: 20px;
+	text-align: center;
+}
+
+.findinput {
+	outline: 0;
+	background: #f2f2f2;
+	width: 100%; /* 크기를 100%로 설정하여 부모 컨테이너에 맞게 조정 */
+	border: 0;
+	margin: 0 0 10px;
+	padding: 15px;
+	height: 40px; /* 높이 일치 */
+	box-sizing: border-box;
+	font-size: 14px;
+	border-radius: 15px;
+}
+
+.findbutton-container {
+	display: flex; /* 좌우 정렬 */
+}
+
+.findbutton {
+	width: 100%; /* 버튼의 너비를 부모 div의 너비에 맞게 설정 */
+	height: 40px;
+	padding: 0; /* padding을 0으로 설정하여 텍스트가 버튼 안에서 정확히 중앙에 위치하도록 함 */
+	font-size: 16px;
+	border-radius: 15px;
+	font-family: 'GmarketSansMedium', sans-serif;
+	cursor: pointer;
+	/* 버튼 내 텍스트 중앙 정렬을 위해 flexbox 사용 */
+	display: flex;
+	align-items: center; /* 수직 중앙 정렬 */
+	justify-content: center; /* 수평 중앙 정렬 */
+	text-align: center; /* 텍스트가 왼쪽이나 오른쪽으로 치우치지 않게 함 */
+	color: #fff;
+	background-color: #000; /* 버튼 배경색 */
+	margin-bottom: 0px;
+}
+
+.findbutton:hover {
+	color: #000;
+	background-color: #D9D9D9;
+	text-decoration: none;
+}
+
+.g-recaptcha-wrapper {
+	margin-bottom: 10px;
+}
+
+.findresult {
+	font-size: 0.9em;
+	height: 20px;
+}
+
+#findIdDelay, #findPwDelay {
+	font-size: 0.9em;
+	color: gray;
+	margin-left: 10px;
+}
+
+#errorModal {
+	display: none;
+	position: fixed;
+	top: 30%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background-color: white;
+	border: 1px solid #ccc;
+	padding: 10px;
+	z-index: 1000;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+	width: 300px;
+}
+
+#errorModalMessage {
+	color: red;
+	font-weight: bold;
+	margin-bottom: 20px;
+}
+
+/* 프로필 */
+.profile-container {
+	width: 100%;
+	max-width: 1000px;
+	margin: 40px auto;
+	border: 1px solid #ddd;
+	border-radius: 15px;
+	background-color: #f9f9f9;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+	padding: 30px;
+}
+
+/* 제일 상단 */
+.profile-title h2 {
+	text-align: center;
+	font-size: 36px;
+	margin-bottom: 0px;
+	font-weight: bold;
+	color: #222;
+}
+
+.profile-title h3 {
+	text-align: center;
+	font-size: 18px;
+	margin-top: 0px; /* 위쪽 마진도 없애주면 더 밀착됨 */
+	color: #666;
+}
+
+/* 사진 + 텍스트 정렬용 래퍼 */
+.profile-contents {
+	display: flex;
+	justify-content: center;
+	gap: 100px;
+	padding: 30px;
+}
+
+/* 공통 컬럼 스타일 */
+.profile-column {
+	width: 280px;
+	min-height: 360px;
+	box-sizing: border-box;
+}
+
+/* 이미지 스타일 */
+.profile-image img {
+	width: 100%;
+	height: 100%;
+	max-height: 360px;
+	object-fit: cover;
+	border-radius: 12px;
+	border: 1px solid #000;
+	background-color: #fff;
+	padding: 20px;
+	background-color: #fff;
+}
+
+/* About me, Detail 텍스트 */
+.profile-about h4, .profile-detail h4 {
+	margin-bottom: 15px;
+	font-size: 20px;
+	color: #333;
+}
+
+.profile-about p, .profile-detail p {
+	margin-bottom: 8px; /* 줄 간격 */
+	font-family: 'GmarketSansMedium', sans-serif;
+}
+
+.profile-detail strong {
+	display: inline-block;
+	width: 60px; /* 원하는 라벨 너비 (글자 수에 맞게 조절) */
+	font-weight: bold;
+	color: #333;
+	margin-right: 15px;
+}
+
+.profile-detail span {
+	color: #444;
+}
+
+.socials {
+	list-style: none;
+	display: flex;
+	gap: 15px;
+	margin-top: 15px;
+	padding-left: 0;
+}
+
+.socials li {
+	display: inline-block;
+}
+
+.socials a {
+	font-size: 22px;
+	color: #555;
+	transition: color 0.3s ease;
+}
+
+.socials a:hover {
+	color: #000; /* 호버 시 진한 색 */
+}
+
+/* 버튼 스타일 */
+.profile-button {
+	text-align: center;
+	margin-top: 30px;
+}
+
+.profile-button button {
+	color: #fff;
+	background-color: #000;
+	padding: 10px 25px;
+	border-radius: 8px;
+	margin: 0 10px;
+	font-size: 14px;
+	cursor: pointer;
+}
+
+.profile-button button:hover {
+	color: #000;
+	background-color: #D9D9D9;
+}
+
+/* 회원정보(프로필) 수정 */
+.profile-modify-container {
+	width: 100%;
+	max-width: 1000px;
+	margin: 40px auto;
+	border: 1px solid #ddd;
+	border-radius: 15px;
+	background-color: #f9f9f9;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+	padding: 30px;
+}
+
+.profile-modify-container h2 {
+	font-size: 36px;
+	margin: 0px;
+	margin-bottom: 30px;
+}
+
+.profile-modify-container td {
+	padding: 5px;
+	font-size: 18px;
+}
+
+.profile-modify-container input[type="text"], input[type="password"],
+	input[type="radio"] {
+	padding: 5px;
+}
+
+.profile-modify-container img {
+	border: 1px solid #666;
+	border-radius: 50%;
+	width: 180px;
+	height: 180px;
+}
+
+/* 회원탈퇴 */
+.user-delete h3 {
+	text-align: center;
+}
+
+.user-delete input {
+	outline: 0;
+	background: #f2f2f2;
+	width: 100%; /* 크기를 100%로 설정하여 부모 컨테이너에 맞게 조정 */
+	border: 0;
+	margin: 0 0 10px;
+	padding: 15px;
+	height: 40px; /* 높이 일치 */
+	box-sizing: border-box;
+	font-size: 14px;
+	border-radius: 15px;
+}
+
+.user-delete input::placeholder {
+	color: #aaa; /* placeholder 색상 */
+	font-size: 14px; /* placeholder 크기 통일 */
+}
+
+#modalOverlay {
+	display: none; /* 기본은 숨김 */
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.5); /* 반투명 검정 배경 */
+	z-index: 999; /* 모달 아래쪽에 위치하도록, 모달보다 낮게 조절 필요 */
+}
+
+.modal {
+	background: #fff;
+	border: 1px solid #ccc;
+	border-radius: 15px;
+	padding: 30px;
+	box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0
+		rgba(0, 0, 0, 0.24);
+	width: 300px;
+	display: none;
+	position: fixed;
+	top: 30%;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 1000;
+}
+
+.button-container {
+	display: flex; /* 좌우 정렬 */
+	gap: 10px;
+}
+
+.deletebutton {
+	width: 90%; /* 버튼의 너비를 부모 div의 너비에 맞게 설정 */
+	height: 40px;
+	padding: 0; /* padding을 0으로 설정하여 텍스트가 버튼 안에서 정확히 중앙에 위치하도록 함 */
+	font-size: 16px;
+	border-radius: 15px;
+	font-family: 'GmarketSansMedium', sans-serif;
+	cursor: pointer;
+	/* 버튼 내 텍스트 중앙 정렬을 위해 flexbox 사용 */
+	display: flex;
+	align-items: center; /* 수직 중앙 정렬 */
+	justify-content: center; /* 수평 중앙 정렬 */
+	text-align: center; /* 텍스트가 왼쪽이나 오른쪽으로 치우치지 않게 함 */
+	color: #fff;
+	background-color: #000; /* 버튼 배경색 */
+	margin-bottom: 0px;
+}
+
+.deletebutton:hover {
+	color: #000;
+	background-color: #D9D9D9;
+	text-decoration: none;
+}

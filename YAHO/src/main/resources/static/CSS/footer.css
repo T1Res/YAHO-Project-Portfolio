@@ -1,0 +1,91 @@
+@charset "UTF-8";
+
+.footer-wrapper .footer {
+	padding: 30px 2%;
+	color: #fff;
+}
+
+.footer-wrapper .footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 30px;
+    width: 100%;
+    max-width: 1400px; /* 필요하면 유지 */
+    margin: 0 auto;
+    padding: 30px 2%;
+}
+
+
+.footer-wrapper .footer-content a {
+	color: #fff;
+	font-size: 16px;
+	text-decoration: none;
+}
+
+.footer-wrapper .left, .center, .right { 
+	flex: 1; 
+}
+
+
+.footer-wrapper .col h2{
+	color: #fff;
+	font-size: 32px;
+	margin-bottom: 20px;
+}
+.footer-wrapper .col h3 {
+	color: #fff;
+	font-size: 26px;
+}
+
+.footer-wrapper .footer-nav {
+    display: flex;
+    justify-content: start;
+    align-items: center; /* ✅ 세로 가운데 정렬 추가 */
+    gap: 30px;
+    list-style: none;
+    margin-bottom: 25px;
+}
+
+
+.footer-wrapper .footer-nav li a {
+    white-space: nowrap;
+    line-height: 1; /* ✅ 추가: 줄 간격 딱 맞추기 */
+    display: flex;
+    align-items: center;
+}
+
+
+
+.footer-wrapper .footer-info {
+	margin-top: 20px;
+	color: #fff;
+}
+
+.footer-wrapper .socials {
+	margin-top: 10px;
+	display: flex;
+	justify-content: start;
+	align-content: center;
+	gap: 10px; /* 아이콘 사이 간격 */
+	list-style: none;
+}
+
+.footer-wrapper .socials a i {
+	font-size: 30px; /* 원하는 크기로 변경 */
+	color: #fff;     /* 아이콘 색상 (필요에 따라 변경) */
+	transition: transform 0.7s;
+}
+
+.footer-wrapper .socials a:hover i {
+	transform: scale(1.2); /* 마우스 호버 시 약간 확대 */
+}
+
+.footer-wrapper .copyright {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 16px;
+    color: #fff;
+    padding: 10px 0;
+}
+

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.njm.yaho.mapper.oracle.main.VoteMapperOC">
+	<!-- 투표 전체 조회 -->
+    <select id="selectAllVote" resultType="com.njm.yaho.domain.oracle.main.VoteOCDTO">
+        SELECT 
+	        VOTE_ID AS voteId,
+	        VOTE_NAME AS voteName,
+	        VOTE_IMG AS voteImg,
+	        VOTE_COUNT AS voteCount
+	    FROM 
+	        TBL_VOTE
+	    ORDER BY 
+	        VOTE_ID
+    </select>
+
+    <!-- 투표 수 증가 -->
+    <update id="updateVoteCount">
+        UPDATE TBL_VOTE
+        SET VOTE_COUNT = VOTE_COUNT + 1
+        WHERE VOTE_ID = #{voteId}
+    </update>
+</mapper>

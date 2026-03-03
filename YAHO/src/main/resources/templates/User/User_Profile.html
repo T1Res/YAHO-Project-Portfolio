@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <link href="/CSS/User.css" rel="stylesheet"> 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <title>내 프로필 | YAHO</title>
+  <!-- favicon -->
+<link rel="icon" href="/IMG/favicon/favicon.ico" type="image/x-icon">
+</head>
+<body>
+<!-- 프로필 표시용 테이블 -->
+<div class="profile-container">
+	<div class="profile-title">
+		<h2>프로필</h2>
+		<h3>Hello! Welcome to YAHO</h3>
+	</div>   	
+    <div class="profile-contents">
+	    <div class="profile-column profile-image">
+	    	<!-- 프로필 사진 -->
+	    	<img th:src="${dto.USER_PROFILE_IMG}">
+	    </div>
+	    <div class="profile-column profile-about">
+	    	<h4>한줄소개</h4>
+		    <!-- 한줄소개 -->
+			<!-- <span class="profile-subject">한줄소개</span> -->
+			<span class="profile-content" th:text="${dto.USER_BIO}"></span>
+		</div>
+	    <div class="profile-column profile-detail">
+	    	<h4>Detail</h4>
+	    	<!-- 이름 -->
+	      	<p><strong class="profile-subject">이름</strong>
+	      	<span class="profile-content" th:text="${dto.USER_NICKNAME}"></span></p>
+	
+	    	<!-- ID -->
+	      	<p><strong class="profile-subject">ID</strong>
+	      	<span class="profile-content" th:text="${dto.USER_ID}"></span></p>
+	
+			<!-- 성별 -->
+	      	<p><strong class="profile-subject">Gender</strong>
+	      	<span class="profile-content" th:text="${dto.USER_GENDER == 1 ? '남자' : (dto.USER_GENDER == 2 ? '여자' : '미지정')}"></span></p>
+			
+		    <!-- 이메일 -->
+		    <p><strong class="profile-subject">Email</strong>
+		    <span class="profile-content" th:text="${dto.USER_EMAIL}"></span></p>
+		
+			<ul class="socials">
+				<li><a href="https://www.instagram.com/"><i class="fa-brands fa-instagram"></i></a></li>
+				<li><a href="https://www.facebook.com/"><i class="fa-brands fa-square-facebook"></i></a></li>
+				<li><a href="https://www.youtube.com/"><i class="fa-brands fa-youtube"></i></a></li>
+			</ul>
+		</div>
+    </div>	   
+    
+    <div class="profile-button">
+    	<!-- 버튼 -->
+		<button type="button" onclick="openPasswordModal()">회원탈퇴</button>
+		<button type="button" onclick="history.back()">돌아가기</button>
+    </div>
+</div>
+
+  <!-- 탈퇴 확인 모달 -->
+  <div id="passwordModal" class="modal">
+    <div class="user-delete">
+      <h3>비밀번호 확인</h3>
+      <form id="deleteForm">
+  		<input type="password" id="deletePassword" name="password" placeholder="비밀번호 입력" required ><br>
+  		<div id="deleteError"></div>
+  		<div class="button-container">
+  			<button type="button" onclick="submitDelete()" class="deletebutton">탈퇴</button>
+  			<button type="button" onclick="closePasswordModal()" class="deletebutton">취소</button>
+  		</div>	
+	</form>
+    </div>
+  </div>
+
+  <script>
+  function openPasswordModal() {
+    document.getElementById("passwordModal").style.display = "block";
+    document.getElementById("deletePassword").value = "";
+    document.getElementById("deleteError").innerText = "";
+  }
+
+  function closePasswordModal() {
+    document.getElementById("passwordModal").style.display = "none";
+  }
+
+  function submitDelete() {
+    const password = document.getElementById("deletePassword").value;
+    const errorBox = document.getElementById("deleteError");
+
+    fetch("/User/User_Delete", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: "password=" + encodeURIComponent(password)
+    })
+    .then(res => {
+		if (!res.ok) {
+			errorBox.innerText = "비밀번호가 틀렸습니다.";
+			throw res;
+		}
+		return res.text();
+	})
+    .then(() => {
+		console.log("회원 삭제 성공");
+		//closePasswordModal();
+
+		// ✅ 탈퇴 성공 모달 띄우기
+		document.getElementById("successModal").style.display = "block";
+		document.getElementById("successOverlay").style.display = "block";
+
+		// ✅ 2초 후 메인 페이지로 이동
+		setTimeout(() => {
+			window.location.href = "/Main";
+		}, 2000);
+	})
+  }
+</script>
+<!-- ✅ 회원탈퇴 성공 모달 -->
+<div id="successModal" style="display:none; position:fixed; top:30%; left:50%; transform:translate(-50%, -50%);
+  background-color:white; padding:20px; border:1px solid #ccc; width:300px; text-align:center; box-shadow:0 0 10px rgba(0,0,0,0.3); z-index:1001;">
+  <p style="font-weight:bold; color:green;">회원탈퇴가 완료되었습니다.</p>
+</div>
+
+<!-- ✅ 모달 배경 오버레이 -->
+<div id="successOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+  background:rgba(0,0,0,0.4); z-index:1000;"></div>
+
+
+</body>
+</html>

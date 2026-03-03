@@ -1,0 +1,176 @@
+@charset "UTF-8";
+@font-face {
+    font-family: 'BMDOHYEON';
+    src: url('fonts/BMDOHYEON_ttf.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'GmarketSansMedium';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.nav {
+    font-family: 'BMDOHYEON', sans-serif;
+}
+
+body {
+	font-family: 'GmarketSansMedium', sans-serif;
+}
+
+body {
+    text-align: center;
+    background-color: rgb(0, 0, 0);
+}
+
+h1 {
+    margin-bottom: 20px;
+    color: white;
+}
+
+/* 시간표 전체 */
+.schedule-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;  /* 요일 칸 간 간격 */
+  padding: 0 10px;       /* 왼쪽/오른쪽 여백 추가 */
+}
+
+
+/* 요일 칼럼 */
+.day-column {
+    width: 14.28%; /* 100%를 7등분 */
+    min-height: 350px;
+    background: rgb(22, 22, 22);
+    
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 상단 고정 요일 바 */
+.day-title-bar {
+    position: sticky;
+    top: 60px; /* nav 높이 고려 */
+    z-index: 999;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 10px;
+}
+
+.day-title-cell {
+    width: 14.28%;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    border-right: 1px solid white;
+}
+
+/* 마지막 요일 셀은 구분선 제거 */
+.day-title-cell:last-child {
+    border-right: none;
+}
+
+
+
+/* 애니메이션 카드 */
+.anime-card {
+    width: 95%;  /* 부모 영역 기준 */
+    max-width: 240px; /* 최대 크기 제한 */
+    aspect-ratio: 3 / 4; /* 3:4 비율 유지 */
+    
+    margin: 10px auto;
+    padding: 12px;
+    background: black;
+    border-radius: 12px;
+    box-shadow: 2px 2px 10px rgb(22, 22, 22);
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    
+    box-sizing: border-box;
+    
+    -moz-animation: fadein 2s; /* Firefox */
+    -webkit-animation: fadein 2s; /* Safari and Chrome */
+    -o-animation: fadein 2s; /* Opera */
+}
+
+/* 이미지 비율 3:4 유지 */
+.anime-card img {
+    width: 100%;
+    height: 220px; /* 원하는 고정값 */
+  	object-fit: cover; /* 비율 깨지지 않고 채움 */
+    object-fit: cover;
+    border-radius: 5px;
+    
+    transition: all .5s;
+    z-index: 1;
+}
+.anime-card:hover {
+	transform: scale(1.2);
+	transition: all .5s;
+	z-index: 3;
+}
+
+
+
+/* 애니메이션 정보 */
+.anime-info {
+    text-align: center;
+}
+/* 애니메이션 제목 */
+.anime-title {
+	position: relative; /* 툴팁 기준점 */
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 8px;
+    color: white;
+}
+/* 마우스 오버 시 툴팁 표시 */
+.anime-title:hover::after {
+    content: attr(data-title);
+    position: absolute;
+    left: 0;
+    top: 100%;
+    white-space: nowrap;
+    background: rgba(0, 0, 0, 0.75);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    z-index: 2;
+}
+/* 애니메이션 평점 */
+.anime-rating {
+    font-size: 16px;
+    color: #f39c12;
+    margin-top: 5px;
+}
+
+
+.title-bar {
+	z-index: 1001;
+    position: sticky;
+    top: 0px;
+    display: inline-block; /* 핵심: 내용물만큼 크기 */
+    pointer-events: none; /* 클릭 막지 않도록 */
+    justify-content: center;
+    padding: 10px 10px;
+    font-size: 32px;
+}
+
+
+
+.modal .anime-title {
+	text-align: left;
+}

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>로그인</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 50px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .helper-links {
+      font-size: 0.9em;
+    }
+
+    .helper-links a {
+      margin-right: 10px;
+      text-decoration: underline;
+      cursor: pointer;
+      color: blue;
+    }
+
+    .helper-links a:hover {
+      text-decoration: none;
+    }
+  </style>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body>
+  <h2>로그인</h2>
+
+  <div class="form-group">
+    <label for="userId">아이디</label><br>
+    <input type="text" id="userId" name="userId">
+  </div>
+
+  <div class="form-group">
+    <label for="password">비밀번호</label><br>
+    <input type="password" id="password" name="password">
+  </div>
+
+  <button type="button">로그인</button>
+
+	<div class="form-group helper-links">
+	<div class="helper-links">
+  		<a href="#" onclick="openFindId()">아이디 찾기</a>
+  		<a href="#" onclick="openFindPw()">비밀번호 찾기</a>
+	</div>
+
+  </div>
+  
+  	<!-- ✅ ID 찾기 모달 -->
+	<div id="findIdModal" class="modal" style="display:none; position:fixed; top:20%; left:50%; transform:translateX(-50%);
+		background:#fff; border:1px solid #ccc; padding:20px; z-index:1000; width:300px; box-shadow:0 0 10px rgba(0,0,0,0.2);">
+		
+		<h3>아이디 찾기</h3>
+		
+		<input type="email" id="findIdEmail" placeholder="가입한 이메일 입력" style="width:100%; margin-bottom:10px;">
+		<div id="findIdResult" style="font-size:0.9em; height:20px;"></div>
+		
+		<button id="findIdBtn" onclick="submitFindId()">ID 찾기</button>
+		<span id="findIdDelay" style="font-size:0.9em; color:gray; margin-left:10px;"></span>
+
+		<button onclick="closeFindIdModal()" style="float:right;">닫기</button>
+	</div>
+	
+	<!-- ✅ 비밀번호 찾기 모달 -->
+	<div id="findPwModal" class="modal"
+		style="display: none; position: fixed; top: 20%; left: 50%; transform: translateX(-50%); background: #fff; border: 1px solid #ccc; padding: 20px; z-index: 1000; width: 320px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);">
+		
+		<h3>비밀번호 찾기</h3>
+
+		<input type="text" id="findPwId" placeholder="아이디 입력"
+			style="width: 100%; margin-bottom: 10px;">
+		
+		<input type="email" id="findPwEmail" placeholder="이메일 입력"
+			style="width: 100%; margin-bottom: 10px;">
+
+		<div id="findPwResult" style="font-size: 0.9em; height: 20px;"></div>
+		
+		<!-- reCAPTCHA -->
+		<div class="g-recaptcha" data-sitekey="6LfUSyArAAAAAFd72_SuYgkIYMEhS1l1Mzxcco_b"></div>
+		
+		<br>
+		
+		<button id="findPwBtn" onclick="submitFindPw()">비밀번호 재설정</button>
+		<span id="findPwDelay" style="font-size:0.9em; color:gray; margin-left:10px;"></span>
+
+		<button onclick="closeFindPwModal()" style="float: right;">닫기</button>
+	</div>
+
+
+
+<script>
+let findIdDelayTimer = null;
+let findIdDelayRemaining = 0;
+
+  	//모달 함수
+  	function openFindId() {
+	  document.getElementById("findIdModal").style.display = "block";
+	  document.getElementById("findIdEmail").value = "";
+	  document.getElementById("findIdResult").innerText = "";
+	}
+
+	function closeFindIdModal() {
+	  document.getElementById("findIdModal").style.display = "none";
+	}
+
+	// ID 찾기
+	function submitFindId() {
+	  const email = document.getElementById("findIdEmail").value;
+	  const resultBox = document.getElementById("findIdResult");
+	  const btn = document.getElementById("findIdBtn");
+
+	  if (!email) {
+	    resultBox.style.color = "red";
+	    resultBox.innerText = "이메일을 입력해 주세요.";
+	    return;
+	  }
+
+	  if (btn.disabled) {
+	    resultBox.style.color = "red";
+	    resultBox.innerText = "2분 후에 다시 시도해 주세요.";
+	    return;
+	  }
+
+	  fetch(`/Auth/find-id/send?email=${encodeURIComponent(email)}`)
+	    .then(res => {
+	      if (!res.ok) throw res;
+	      return res.text();
+	    })
+	    .then(msg => {
+	      resultBox.style.color = "green";
+	      resultBox.innerText = "입력하신 이메일로 아이디를 전송했습니다.";
+
+	      // ✅ 2분 제한 시작
+	      startFindIdDelay();
+	    })
+	    .catch(async err => {
+	      const msg = await err.text();
+	      resultBox.style.color = "red";
+	      resultBox.innerText = msg || "존재하지 않는 이메일입니다.";
+	    });
+	}
+
+	// 딜레이 함수
+	function startFindIdDelay() {
+	  const btn = document.getElementById("findIdBtn");
+	  const delayBox = document.getElementById("findIdDelay");
+
+	  btn.disabled = true;
+	  findIdDelayRemaining = 120; // 2분
+
+	  findIdDelayTimer = setInterval(() => {
+	    findIdDelayRemaining--;
+
+	    const m = String(Math.floor(findIdDelayRemaining / 60)).padStart(2, '0');
+	    const s = String(findIdDelayRemaining % 60).padStart(2, '0');
+	    delayBox.innerText = `재요청 가능: ${m}:${s}`;
+
+	    if (findIdDelayRemaining <= 0) {
+	      clearInterval(findIdDelayTimer);
+	      delayBox.innerText = "";
+	      btn.disabled = false;
+	    }
+	  }, 1000);
+	}
+
+
+
+  </script>
+  
+<script>
+let findPwDelayTimer = null;
+let findPwDelayRemaining = 0;
+
+	function openFindPw() {
+	  document.getElementById("findPwModal").style.display = "block";
+	  document.getElementById("findPwId").value = "";
+	  document.getElementById("findPwEmail").value = "";
+	  document.getElementById("findPwResult").innerText = "";
+	}
+
+	function closeFindPwModal() {
+	  document.getElementById("findPwModal").style.display = "none";
+	}
+
+	function submitFindPw() {
+		const captchaResponse = grecaptcha.getResponse();
+		if (!captchaResponse) {
+		  alert("로봇이 아님을 확인해 주세요.");
+		  return;
+		}
+
+	  const userId = document.getElementById("findPwId").value;
+	  const email = document.getElementById("findPwEmail").value;
+	  const resultBox = document.getElementById("findPwResult");
+
+	  if (!userId || !email) {
+	    resultBox.style.color = "red";
+	    resultBox.innerText = "아이디와 이메일을 모두 입력해 주세요.";
+	    return;
+	  }
+
+	  fetch("/Auth/find-pw/reset", {
+	    method: "POST",
+	    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+	    body: `userId=${encodeURIComponent(userId)}&email=${encodeURIComponent(email)}&captcha=${captchaResponse}`
+	  })
+	    .then(res => {
+	      if (!res.ok) throw res;
+	      return res.text();
+	    })
+	    .then(msg => {
+		  resultBox.style.color = "green";
+		  resultBox.innerText = "입력한 이메일로 임시 비밀번호를 전송했습니다.";
+		
+		  startFindPwDelay(); // ✅ 타이머 시작
+		})
+
+	    .catch(async err => {
+	      const msg = await err.text();
+	      resultBox.style.color = "red";
+	      resultBox.innerText = msg || "일치하는 회원 정보가 없습니다.";
+	    });
+	}
+	
+	function startFindPwDelay() {
+		  const btn = document.getElementById("findPwBtn");
+		  const delayBox = document.getElementById("findPwDelay");
+
+		  btn.disabled = true;
+		  findPwDelayRemaining = 120; // 2분
+
+		  findPwDelayTimer = setInterval(() => {
+		    findPwDelayRemaining--;
+
+		    const m = String(Math.floor(findPwDelayRemaining / 60)).padStart(2, '0');
+		    const s = String(findPwDelayRemaining % 60).padStart(2, '0');
+		    delayBox.innerText = `재요청 가능: ${m}:${s}`;
+
+		    if (findPwDelayRemaining <= 0) {
+		      clearInterval(findPwDelayTimer);
+		      delayBox.innerText = "";
+		      btn.disabled = false;
+		    }
+		  }, 1000);
+		}
+
+</script>
+</body>
+</html>

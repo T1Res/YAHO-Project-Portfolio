@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.njm.yaho.mapper.oracle.schedule.ImageMapper">
+ <select id="selectUserProfileImgById" parameterType="String" resultType="string">
+        SELECT 
+            CASE 
+                WHEN user_profile_img IS NULL OR TRIM(user_profile_img) = '' THEN '/IMG/kibon_image.jpg'
+                ELSE user_profile_img
+            END AS user_profile_img
+        FROM tbl_user
+        WHERE user_id = #{userId,jdbcType=VARCHAR}
+    </select>
+<select id="selectUserProfileImg" parameterType="String" resultType="string">
+		SELECT 
+		    T2.user_profile_img as USER_PROFILE_IMG
+		FROM 
+		    TBL_SCORE T1
+		JOIN
+		    TBL_USER T2
+		ON
+		    T1.USER_ID = T2.USER_ID
+        AND T1.ANIME_ID = #{ANIME_ID}
+		WHERE 
+		    T1.USER_ID = #{USER_ID}
+		order by 
+		    SCORE_ID desc;
+</select>
+</mapper>
